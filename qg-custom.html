@@ -1,0 +1,180 @@
+<html>
+
+<head>
+
+  <script src="../util/util.js"></script>
+  <script src="util/imageText.js"></script>
+
+  <script src="qg/js/drawing.js"></script>
+  <script src="qg/js/words.js"></script>
+  <script src="qg/js/question.js"></script>
+  <script src="qg/js/questionTypes.js"></script>
+  <script src="qg/js/maker.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="qg/css/qg.css">
+
+</head>
+
+<body>
+
+
+
+  <div id='menubar' class='menubar'>
+    <div>Copies <input id='copies' type='number' value=3 min=1 max=99></input></div>
+    <div>Shuffle <input id='shuffle' type='checkbox'></input></div>
+    <div>Format <select id='format'>
+        <option value='all'>All at once</option>
+        <option value='one'>One at a time</option>
+      </select></div>
+    <button onclick="start()">Start</button>
+  </div>
+
+  <div id='spacer' style="margin-top:1.5cm;"></div>
+
+  <div id='questionsAll' style="margin-top:1.5cm; display:none;display:flex;flex-wrap:wrap;">
+    <div id='wrapper-all' class='wrapper'></div>
+    <div id='results-all' class='results' style="display:none;"></div>
+  </div>
+
+  <div id='questionCount' class='questionCounter' style="margin-top:0.5cm;display:none;"></div>
+  <div id='questionsOne' class='wrapper questionContainer' style="margin-top:0.5cm; height:75%; display:none;">
+    <div id='output-one' class='outputFixed'></div>
+    <div id='inputWrapper-one' class='input'>
+      <div id='caret-one' class='caret'>></div>
+      <div id='input-one' class='inputField' contenteditable=true></div>
+    </div>
+    <div id='result-one' class='result'></div>
+  </div>
+
+  <script>
+    function start() {
+      document.getElementById('menubar').style.display = 'none'
+      document.getElementById('spacer').style.display = 'none'
+      document.getElementById('questionCount').style.display='flex'
+
+      const numAsks = parseInt(document.getElementById('copies').value);
+      var questionIDs = Object.keys(Question.all);
+      var allSelected = flatten(questionIDs.map(x => Array(numAsks).fill(x)));
+      Question.loaded = [];
+      if (document.getElementById('shuffle').checked) {
+        allSelected = shuffle(allSelected)
+      }
+      Question.allSelected = allSelected
+      if (getSelectedOptionName('format') === 'all') {
+        allSelected.map(qid => {
+          qst = Question.create(...Question.all[qid]['args']);
+          Question.loaded.push(qst.id)
+          writeQuestionForAll('wrapper-all', qst)
+        })
+        document.getElementById('questionsOne').style.display = 'none'
+        document.getElementById('questionsAll').style.display = 'flex'
+      } else {
+        const qid = allSelected[0];
+        qst = Question.create(...Question.all[qid]['args']);
+        Question.loaded.push(qst.id)
+        writeOneQuestionForOne(qst)
+        document.getElementById('input-one').onkeypress = (e) => checkInput(e, null);
+        document.getElementById('questionsAll').style.display = 'none'
+        document.getElementById('questionsOne').style.display = 'flex'
+      }
+
+    }
+
+
+    var fullParams = new URLSearchParams(window.location.search);
+
+    var shuffleVar = fullParams.get('shuffle') || true;
+    shuffleVar = (shuffleVar == 'true');
+    document.getElementById('shuffle').checked = shuffleVar;
+
+    var copies = fullParams.get('copies') || "3";
+    document.getElementById('copies').value = copies;
+
+    var format = fullParams.get('format') || "all";
+    document.getElementById('format').value = format;
+
+    var questionsGroups = {};
+
+    // User specified bundles from URL params
+    var bundlePar, bundlesToRegister
+    bundlePar = fullParams.get('bundles');
+    if (typeof(bundlePar) == 'string') {
+      bundlesToRegister = bundlePar.split('$')
+    } else {
+      bundlesToRegister = []
+    }
+
+    bundlesToRegister.forEach(bundle => {
+      let splitbundle = bundle.split('-')
+      Object.keys(Question.Bundle[bundle]).map(descr => {
+        const newBundle = splitbundle.concat([descr, '']).join('-');
+        let quests = Question.Bundle[bundle][descr];
+        if (typeof(quests[0]) === 'string') {
+          quests = [quests];
+        }
+        quests.map(arr => {
+          // registerQuestionType(questionsGroups, newBundle, arr)
+          Question.create(...arr)
+        })
+      })
+    })
+
+
+    // User specified types from URL params
+    var typePar, typesToRegister=[], typeObjs=[], leftRight,rightParsed
+    typePar = fullParams.get('types');
+console.log(typePar)
+
+    if (typeof(typePar) == 'string') {
+      typePar.split('$').map(function(x,ind) {
+        splt = x.split(':')
+        typesToRegister[ind] = splt[0]
+        typeObjs[ind]={}
+        splt.slice(1).forEach(function(y) {
+          leftRight = y.split('=');
+          if (isNaN(parseFloat(leftRight[1]))) {
+            rightParsed = leftRight[1];
+          } else {
+            rightParsed = parseFloat(leftRight[1]);
+          }
+          typeObjs[ind][leftRight[0]] = rightParsed;
+        })
+      })
+    }
+    console.log(typesToRegister)
+    console.log(typeObjs)
+
+    typesToRegister.forEach((type,ind) => {
+      // registerQuestionType(questionsGroups, x)
+      Question.create(type, typeObjs[ind])
+    })
+
+
+
+    traverseQuestionsTree(
+      questionsGroups,
+      (arg, trail) => {
+        null
+      },
+      (arg, trail) => {
+        var q
+        if (arg instanceof Array) {
+          q = Question.create(...arg)
+        } else {
+          q = Question.create(arg, {})
+        }
+        // q.id = `${trail.join('-')}-${q.id}`
+      }
+    )
+
+
+    var startBool = fullParams.get('start') || 'true';
+    if (startBool == 'true') {
+      start();
+    }
+  </script>
+
+
+</body>
+
+</html>

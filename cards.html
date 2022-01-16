@@ -1,0 +1,86 @@
+<html>
+<style>
+</style>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.js"></script>
+  <script src="cards/cards.js"></script>
+  <script src="util/misc.js"></script>
+  <script src="wsg/js/contentLists.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="cards/cards.css">
+</head>
+
+<body>
+
+
+    <div id="controls" class="controls">
+      <div class="control">
+        Card Content:
+        <select id="content" class="control" onchange="update()"></select>
+      </div>
+
+      <div class="control">
+        Font:
+        <select id="fontFamily" class="control" onchange="update()">
+          <option value="Arial">Arial</option>
+          <option value="Comic Sans MS">Comic Sans MS</option>
+          <option value="Times">Times</option>
+        </select>
+      </div>
+
+      <div class="control">
+        Number of cards:
+        <input id="numCards" class="control" onchange="update()" type="number" min="1" max="888" step="1" value="54"></input>
+      </div>
+      <div class="control">
+        Number of Sets:
+        <select id="numSets" class="control" onchange="update()">
+          <option value="1">1</option>
+          <option value="2">2</option>
+        </select>
+      </div>
+
+      <div class="control">
+        Style:
+        <select id="style" class="control" onchange="update()">
+          <option value="playingCard">Playing Card</option>
+          <option value="flashcard">Flashcard</option>
+        </select>
+      </div>
+
+      <button class="control" onclick="window.print()">PRINT</button>
+
+    </div>
+
+  <div id='pages' class='pages'></div>
+
+</body>
+
+<script>
+
+  initializePage()
+
+var setControl = function(name,params,defaultVal) {
+  const newVal = params.get(name)
+  if (newVal===undefined || newVal===null) {
+    $('#'+name).val(defaultVal)
+  } else {
+    $('#'+name).val(newVal)
+  }
+}
+
+const params = new URLSearchParams(window.location.search);
+
+setControl('content',params,'fractions')
+setControl('fontFamily',params,'Arial')
+setControl('numSets',params,1)
+setControl('style',params,'playingCard')
+
+  update()
+
+</script>
+
+
+</html>

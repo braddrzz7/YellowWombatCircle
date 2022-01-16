@@ -1,0 +1,238 @@
+html {
+  scroll-behavior: smooth;
+}
+
+.progression {
+    color:black;
+    font-family:arial;
+    font-size:30;
+    font-weight:bold;
+    display:flex;
+    flex-wrap:wrap;
+    width:98%;
+    background:white;
+    border: solid black 3px;
+    border-radius:5px;
+    padding:3mm;
+    margin:6mm 6mm;
+}
+
+.concept {
+    color:gray;
+    font-size:24;
+    display:flex;
+    flex-wrap:wrap;
+    width:98%;
+    padding:3mm;
+}
+
+
+.results {
+  color:blue;
+  background: lightgray;
+  width:75%;
+  font-size:18;
+  line-height:1;
+  padding:3mm;
+  border-radius:5px;
+  margin-top:30;
+  margin-left:12.5%;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content: left;
+  align-items: center;
+}
+
+.output {
+  /* background: #333333; */
+  width:100%;
+  overflow-y: scroll;
+  font-size:18;
+  line-height:1;
+  padding:3mm;
+  border-radius:5px;
+  font-family: "Courier New";
+  /* margin-top:20; */
+  /* margin-left:12.5%; */
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input {
+  width:75%;
+  float:left;
+  display:block;
+  height:1.5em;
+  font-size:18;
+  resize:none;
+  padding:3mm;
+  border-radius:5px;
+  font-family: monospace;
+  background:whitesmoke;
+  color:darkgreen;
+  margin-top:10px;
+  border: solid 3px gray;
+}
+
+
+.scroll {
+  width:75%;
+  float:left;
+  display:block;
+  height:1px;
+}
+
+.caret {
+  float:left;
+  display:block;
+  color:darkgreen;
+  width:1em;
+  height:2em;
+}
+.inputField {
+  margin-left:1em;
+  height:2em;
+}
+.questionContainer {
+  display:flex;
+  flex-wrap:wrap;
+  width:85%;
+  justify-content:center;
+  margin:.5cm;
+  padding:.5cm;
+  padding-top:1mm;
+  background:white;
+  border-radius: 10px;
+  border: solid black 3px;
+}
+
+.wrapper {
+  display:flex;
+  flex-wrap:wrap;
+  width:90%;
+  justify-content:center;
+}
+
+
+.prompt {
+  width:95%;
+ display: flex;
+ font-size: 24;
+ /* font-family: monospace; */
+ justify-content: center;
+ margin-top: 2mm;
+ margin-bottom:4mm;
+ color: dimgray;
+ align-items: center;
+ justify-content: center;
+}
+
+.content {
+ display: flex;
+ font-size: 25;
+ /* font-family: monospace; */
+ justify-content: center;
+ margin-top: 2mm;
+ width: 100%;
+ flex-wrap: wrap;
+ /* color: white; */
+ align-items: center;
+ justify-content: center;
+}
+
+
+.container {
+ /* border: solid 3px black; */
+ /* padding: 2mm 1mm; */
+ /* margin: 2mm 1mm; */
+ background: white;
+ width:96%;
+}
+
+
+.equationTerm {
+ display: flex;
+ letter-spacing: 0;
+ margin: 2 5 2 5;
+ justify-content: center;
+}
+
+.choice {
+  color:blue;
+  font-family:sans-serif;
+  font-size:22;
+  display:flex;
+  justify-content:center;
+
+}
+
+
+.box2, .box3, .box4, .box6, .box12 {
+  border: solid black 1px;
+}
+
+.box12 {
+  width: 23%;
+  height: 31%;
+}
+
+.box6 {
+  width: 48%;
+  height: 31%;
+}
+
+.box4 {
+  width: 23%;
+  height: 100%;
+}
+
+.box3 {
+  width: 100%;
+  height: 31%;
+}
+
+.box2 {
+  width: 48%;
+  height: 100%;
+}
+
+.box1 {
+  width: 100%;
+  height: 100%;
+}
+
+.boxcontainer {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height:100%;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+  align-content: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.fraction {
+  display: inline-block;
+  text-align: center;
+  padding: 0 5px;
+  font-size:35;
+}
+
+.numerator {
+  padding: 0 5px;
+}
+
+.denominator {
+  border-top: 1px solid black;
+  display: block;
+}
+
+.selectBox {
+  margin:1mm .2cm;
+}

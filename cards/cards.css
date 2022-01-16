@@ -1,0 +1,190 @@
+body {
+  background-color: yellow
+}
+
+.pages {
+  zoom: 55%;
+  display: flex;
+  flex-wrap: wrap;
+  margin: .25in;
+}
+
+.page {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: white;
+  border: solid 1px black;
+  width: 8.5in;
+  height: 11.5in;
+  justify-content: center;
+  align-content: center;
+  /* justify-content:space-evenly; */
+  /* align-content:space-evenly; */
+  margin: .15in;
+}
+
+
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  width: 2.4in;
+  height: 3.4in;
+  border: solid black 2px;
+  border-radius: 0px;
+  justify-content:center;
+  align-items:center;
+}
+
+.cardtop {
+  width: 85%;
+  height: 23%;
+  background-color: white;
+  padding: 2% 5%;
+  justify-content: space-between;
+  align-items:center;
+}
+
+.cardmid {
+  width: 85%;
+  /* total height is 2in */
+  height: 30%;
+  background-color: white;
+  margin: 5% 5%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.cardFooter {
+  font-size:.75em;
+  width:85%;
+  height:12%;
+  display:flex;
+  align-items:center;
+  font-family:Comic Sans MS;
+  background-color: white;
+  padding: 2% 5%;
+  justify-content: space-between;
+}
+
+.box2, .box3, .box4, .box6, .box12 {
+  border: solid black 1px;
+}
+
+.box12 {
+  width: 23%;
+  height: 31%;
+}
+
+.box6 {
+  width: 48%;
+  height: 31%;
+}
+
+.box4 {
+  width: 23%;
+  height: 100%;
+}
+
+.box3 {
+  width: 100%;
+  height: 31%;
+}
+
+.box2 {
+  width: 48%;
+  height: 100%;
+}
+
+.boxcontainer {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height:100%;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+  align-content: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.fraction {
+  display: inline-block;
+  text-align: center;
+  padding: 0 5px;
+  font-size:35;
+}
+
+.numerator {
+  padding: 0 5px;
+}
+
+.denominator {
+  border-top: 1px solid black;
+  display: block;
+}
+
+.logo {
+  /* width:250; */
+  margin-top: 0in;
+}
+
+.controls {
+  margin: .3cm .8cm;
+  width: 22cm;
+  padding: .25cm;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content: space-around;
+  align-content:center;
+  /* position: fixed; */
+  /* z-index: 999; */
+  background:darkgray;
+  border-radius:6px;
+}
+
+.control {
+  font-size:16 ;
+  font-weight:bold;
+  border-radius:6px;
+  padding: .05cm;
+  margin: .1cm;
+  display:flex;
+  align-items:center;
+}
+
+form.control {
+  background: white;
+  border: solid 1px black;
+}
+
+
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+
+  body, .page, .pages {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: 0;
+    -webkit-print-color-adjust: exact;
+    width: 8.5in;
+    height: 11in;
+  }
+
+  .pages {
+    zoom: 100%;
+  }
+
+  .controls {
+    display: none !important;
+  }
+}

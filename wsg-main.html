@@ -1,0 +1,159 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.core.min.js"></script>
+  <script src="util/imageText.js"></script>
+  <script src="util/misc.js"></script>
+  <script src="wsg/js/Controls.js"></script>
+  <script src="wsg/js/contentLists.js"></script>
+  <script src="wsg/js/Puzzle.js"></script>
+  <script src="wsg/js/groups.js"></script>
+  <script src="wsg/js/worksheets.js"></script>
+  <script src="wsg/js/PuzzleTypes.js"></script>
+  <script src="wsg/js/PuzzleTypes/math.js"></script>
+  <script src="wsg/js/PuzzleTypes/choice.js"></script>
+  <script src="wsg/js/PuzzleTypes/order.js"></script>
+  <script src="wsg/js/PuzzleTypes/multipleanswer.js"></script>
+  <script src="wsg/js/PuzzleTypes/matching.js"></script>
+  <script src="wsg/js/PuzzleTypes/comparing.js"></script>
+  <script src="wsg/js/PuzzleTypes/wordsearch.js"></script>
+  <script src="wsg/js/PuzzleTypes/chess.js"></script>
+  <script src="wsg/js/PuzzleTypes/time.js"></script>
+  <script src="wsg/js/WellBeing.js"></script>
+  <link rel='stylesheet' href='wsg/css/worksheet.css'></link>
+  <link rel='stylesheet' href='wsg/css/puzzles.css'></link>
+  <link rel='stylesheet' href='wsg/css/print.css'></link>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+
+<body>
+
+
+</body>
+
+<script>
+  setupPage()
+
+  var puzzlesFromQuery = function(queryString) {
+
+    var params = new URLSearchParams(queryString)
+
+    var puzzleType, category, subcategory, num
+    var puzzleType = params.get('type')
+    var category = params.get('cat');
+    var subcategory = params.get('subcat');
+    var group = params.get('group');
+    var num = params.get('num');
+    if (num === null) {
+      num = 1
+    };
+
+    if (puzzleType === null && category === null && group===null) {
+      randomSample(Puzzle.allTypes(), 5).map(pt => Puzzle.generate(pt))
+    }
+
+    if (puzzleType !== null) {
+      if (puzzleType.toLowerCase() === 'all') {
+        const allTypes = Puzzle.allTypes();
+        let typeCatSubcat = [];
+        allTypes.forEach(x => typeCatSubcat.push([x, Puzzle.getCategory(x), Puzzle.getSubcategory(x)]))
+        console.log(typeCatSubcat)
+        const cats = union(transpose(typeCatSubcat)[1]).sort();
+        console.log(cats)
+
+        var categoryObject = {};
+        cats.map(x => categoryObject[x] = [])
+
+        cats.map(function(category) {
+          console.log(category)
+          Puzzle.subcategories(category).map(function(subcategory) {
+            console.log('  ', subcategory)
+            typeCatSubcat.map(function([type, categ, subcateg]) {
+              if (category === categ && subcategory === subcateg) {
+                console.log('    ', type)
+                Puzzle.generate(type, {})
+              }
+            })
+          })
+        })
+      } else if (puzzleType.toLowerCase() === 'none')  {
+        ops={}
+
+      } else {
+        var puzzleTypes = puzzleType.split(' ')
+        var n = params.get('n')
+        var ops = {}
+        for (let p of params) {
+          if (p[0] === 'type') {
+            null;
+          } else if (p[0] === 'hideInstruction') {
+            ops.layout = {};
+            ops.layout[p[0]] = parseSettingValue(p[1]);
+          } else {
+            ops[p[0]] = parseSettingValue(p[1]);
+          }
+        }
+        puzzleTypes.map(pt =>
+          range(0, num).map(() =>
+            Puzzle.generate(pt, ops)
+          )
+        )
+      }
+    }
+    if (category !== null) {
+      // const selectedTypes = Object.keys(Puzzle.Types).filter(x => Puzzle.getTags(x).includes(puzzleCategory))
+      const selectedTypes = Puzzle.getTypes(category, subcategory);
+      console.log(selectedTypes)
+      selectedTypes.map(x => range(0, num).forEach(() => Puzzle.generate(x, {})))
+    }
+
+    if (group !== null) {
+      var groupArray = puzzleGroupObject[group]['puzzles']
+      groupArray.map((x)=>Puzzle.generate(x[0], x[1]))
+      // by defualt, groups turn off puzzle shuffling
+      $('#shuffleOnPartition').val('No')
+    }
+
+  }
+
+  // make 'global' type that applies to everything, e.g. fontSize & num,
+  // and also a way to repeat the whole block of puzzles multiple times (in order)
+  // and an option that controls the shuffle setting
+
+
+
+  /*
+    Get the URL query string, then split it up by the next keyword,
+    which separates parameters for different puzzles/categories
+    then generate the appropriate puzzle(s) for each set of parameters
+  */
+  var fullParams = new URLSearchParams(window.location.search);
+  var makeWorksheetPar = fullParams.get('make');
+  var controlsPar = fullParams.get('controls');
+  controlsPar = (controlsPar===null)?'full':controlsPar
+  const query = fullParams.toString()
+  const queries = query.split('&next=&')
+  queries.map((x) => puzzlesFromQuery(x))
+
+
+  // add all the puzzles
+  Object.values(Puzzle.allPuzzles).map((p)=>writePuzzlePage([p], {
+    showPages: true,
+    showSettings: true,
+    footer:false,
+    fullSize:false
+  }));
+
+  // make worksheet, if requested
+  if (makeWorksheetPar=='true') {
+    $('#makeWorksheetButton').click()
+  }
+
+  changeControlView(controlsPar)
+
+  toggleControls('homeControlBox')
+
+</script>
+
+</html>

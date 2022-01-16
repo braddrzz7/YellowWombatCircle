@@ -1,0 +1,122 @@
+<html>
+<style>
+</style>
+
+<head>
+  <link rel="stylesheet" href="picture-book/picture-book.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.js"></script>
+  <script src="picture-book/picture-book.js"></script>
+  <script src="util/imageText.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+
+<body>
+
+  <div id="controls" class="controls">
+    <div class="control">
+      Caseness:
+      <select id="caseness" class="control" onchange="update(allfileNames)">
+        <option value="UpperCase">UpperCase</option>
+        <option value="LowerCase">LowerCase</option>
+        <option value="Capital">Capital</option>
+        <option value="Random">Random</option>
+      </select>
+    </div>
+    <div class="control">
+      Font Size:
+      <select id="fontFamily" class="control" onchange="update(allfileNames)">
+        <option value="Arial">Arial</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Times">Times</option>
+        <option value="Random">Random</option>
+      </select>
+    </div>
+    <div class="control">
+      Number of items:
+      <input id="numPanels" class="control" onchange="update(allfileNames)" type="number" min="2" max="888" step="2" value="10"></input>
+    </div>
+    <div class="control">
+      Per page
+      <select id="perPage" class="control" onchange="update(allfileNames)">
+        <option value="2">2</option>
+        <option value="4">4</option>
+      </select>
+    </div>
+
+    <div class="control">
+      Words contain
+      <select id="typeCombiner" class="control" onchange="update(allfileNames)">
+        <option value="Any">Any of</option>
+        <option value="All">All of</option>
+        <option value="Only">Only</option>
+        <option value="Exactly">Exactly</option>
+      </select>
+      <form class="control" id="wordType" onchange="update(allfileNames)">
+        CVC<input type="checkbox" name="CVC" value="CVC" checked class="checkbox">
+        Blend<input type="checkbox" name="Blend" value="Blend" class="checkbox">
+        Sight<input type="checkbox" name="Sight" value="Sight" class="checkbox">
+        Plural<input type="checkbox" name="Plural" value="Plural" class="checkbox">
+        Suffix<input type="checkbox" name="Suffix" value="Suffix" class="checkbox">
+      </form>
+    </div>
+
+    <button class="control" onclick="shuffle(allfileNames)">Shuffle</button>
+    <button class="control" onclick="window.print()">PRINT</button>
+
+  </div>
+
+  <div class="topSpacer">&nbsp</div>
+
+  <ul class="instructions" id="instructions">
+    <li>When printing, set the margins to None and the paper size to Letter (this should happen automatically)</li>
+    <li>The text next to the images is editable, but shuffling or changing the font will reset the text (for now; will fix this later)</li>
+  </ul>
+
+
+  <div id='wrapper' class='wrapper'></div>
+  <div id='pages' class='pages'> </div>
+
+</body>
+
+
+<script>
+
+
+  var setControl = function(name,params,defaultVal) {
+    const newVal = params.get(name)
+    if (newVal===undefined || newVal===null) {
+      $('#'+name).val(defaultVal)
+    } else {
+      $('#'+name).val(newVal)
+    }
+  }
+
+  var setCheckboxesControl = function(name,params,defaultVal) {
+    let newVal = params.get(name)
+    if (newVal===null || newVal===undefined) {
+      newVal = defaultVal
+    }
+    newVal = newVal.split('+')
+    newVal.map(x=>$(`#wordType input[name=${x}]`).prop('checked','true'))
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  setControl('caseness',params,'Random')
+  setControl('fontFamily',params,'Arial')
+  setControl('perPage',params,2)
+  setControl('numPanels',params,200)
+  setControl('typeCombiner',params,'Only')
+
+  setCheckboxesControl('wordType',params,'CVC+Plural')
+
+  imgTextObject = imageText();
+  allfileNames = Object.keys(imgTextObject)
+
+  update(allfileNames)
+
+</script>
+
+
+</html>

@@ -1,0 +1,152 @@
+<html>
+
+<head>
+
+  <script src="util/util.js"></script>
+  <script src="util/imageText.js"></script>
+
+  <script src="qg/js/drawing.js"></script>
+  <script src="qg/js/words.js"></script>
+  <script src="qg/js/question.js"></script>
+  <script src="qg/js/questionTypes.js"></script>
+  <script src="qg/js/q-math.js"></script>
+  <script src="qg/js/q-time.js"></script>
+  <script src="qg/js/q-language.js"></script>
+  <script src="qg/js/maker.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="qg/css/qg.css">
+
+</head>
+
+<body>
+
+
+
+  <div id='menubar' class='menubar'>
+    <!-- <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button> -->
+    <div>Max Questions <input id='numAsks' type='number' value=10 min=1 max=99></input></div>
+    <div>Shuffle <input id='shuffle' type='checkbox'></input></div>
+    <div>Format <select id='format'>
+        <option value='all'>All at once</option>
+        <option value='one'>One at a time</option>
+      </select></div>
+    <button onclick="makeEWS()">Make</button>
+    <div>Questions Selected:&nbsp;<span id='numSelectedQ' style="width:3em;display:inline-block;">0</span></div>
+  </div>
+
+  <div id='spacer' style="margin-top:1.5cm;"></div>
+
+  <ul id='instructions'>
+    <li>Click the section headings to expand to see subsections and questions</li>
+    <li>Click the checkboxes next to the hedings or questions you want to include in your worksheet</li>
+    <li>The 'Copies' number at the top controls how many versions of each question will be included in the worksheet</li>
+    <li>The 'Format' menu controls whether your worksheet will display all questions at once on a continuous page, or cycle through them one at a time. </li>
+  </ul>
+
+  <div id='chooser'>
+    <div id='subheader-'></div>
+  </div>
+
+  <div id='questionsAll' style="margin-top:1.5cm; display:none;display:flex;flex-wrap:wrap;">
+    <div id='wrapper-all' class='wrapper'></div>
+    <div id='result-all' class='result' style="display:none;"></div>
+  </div>
+
+  <div id='questionCount' class='questionCounter' style="margin-top:0.5cm;display:none;"></div>
+  <div id='questionsOne' class='wrapper questionContainer' style="margin-top:1.5cm; height:75%; display:none;">
+    <div id='output-one' class='outputFixed'></div>
+    <div id='inputWrapper-one' class='input'>
+      <div id='caret-one' class='caret'>></div>
+      <div id='input-one' class='inputField' contenteditable=true></div>
+    </div>
+    <div id='result-one' class='result' style="display:none;"></div>
+  </div>
+
+
+  <script>
+    // Hide question areas until Make is clicked
+    document.getElementById('questionsAll').style.display = 'none'
+    document.getElementById('questionsOne').style.display = 'none'
+
+
+    var formatPar
+
+    ops = {}
+    // this is manil for display order.
+    // anything not set here gets appended
+    questionsGroups = {
+      language: {
+        letters: {'ordering':{},'comparing':{}},
+        reading: {},
+        spelling: {}
+      },
+      math: {
+        counting: {'images':{},'ones':{}},
+        numbers: {'whole numbers':{},'negatives':{},'integers':{},'fractions':{},'decimals':{}},
+        addition: {},
+        subtraction: {},
+        multiplication:{},
+        'place value': {}
+      }
+    }
+
+
+    Object.keys(Question.Bundle).forEach(bundle => {
+      let splitbundle = bundle.split('-')
+      Object.keys(Question.Bundle[bundle]).map(descr => {
+        const newBundle = splitbundle.concat([descr,'']).join('-');
+          let quests = Question.Bundle[bundle][descr];
+          if (typeof(quests[0])==='string') {quests = [quests];}
+          quests.map(arr=>{
+        registerQuestionType(questionsGroups,newBundle,arr)
+      })
+      })
+    })
+
+    Object.keys(Question.Types).forEach(x => {
+      registerQuestionType(questionsGroups, x)
+    })
+
+
+    traverseQuestionsTree(
+      questionsGroups,
+      (arg, trail) => {
+        if (trail.length>0) {
+          const [wrapperCat, qCat] = questionLevelContainer(trail[trail.length - 1], trail.join('-'), 'categoryheader');
+          wrapperCat.style['font-size']=Math.max(15,30-5*(trail.length-1))
+          wrapperCat.style['font-family']=['Arial','Times','Courier'][trail.length-1%3]
+          document.getElementById('subheader-' + trail.slice(0, trail.length - 1).join('-')).appendChild(wrapperCat)
+        }
+      },
+      (arg, trail) => {
+        var q
+        if (arg instanceof Array) {
+          q = Question.create(...arg)
+        } else {
+          q = Question.create(arg, {})
+        }
+        q.id = `${trail.join('-')}-${q.id}`
+        // q.generate();
+        q.write({
+          id: document.getElementById('subheader-' + trail.join('-')).id,
+          answer: true,
+          description: arg,
+          making: true
+        })
+      }
+    )
+
+    traverseQuestionsTree(
+      questionsGroups,
+      (arg, trail) => {
+        if (trail.length>0) {addChildVisibilityToggler(trail) };
+        // if (trail.length>1) {document.getElementById('subheader-click-wrapper-'+trail.join('-')+'-').click();};
+      },
+      () => {}
+    )
+  </script>
+
+
+</body>
+
+</html>

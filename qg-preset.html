@@ -1,0 +1,454 @@
+<html>
+
+<head>
+
+  <script src="util/util.js"></script>
+  <script src="util/imageText.js"></script>
+
+  <script src="qg/js/drawing.js"></script>
+  <script src="qg/js/words.js"></script>
+  <script src="qg/js/question.js"></script>
+  <script src="qg/js/questionTypes.js"></script>
+
+  <script src="qg/js/q-math.js"></script>
+  <script src="qg/js/q-time.js"></script>
+  <script src="qg/js/q-language.js"></script>
+  <script src="qg/js/maker.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="qg/css/qg.css">
+
+</head>
+
+<body>
+
+  <div id='menubar' class='menubar'>
+    <!-- <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button> -->
+    <div>Max Questions <input id='numAsks' type='number' value=10 min=1 max=99></input></div>
+    <div>Format <select id='format'>
+        <option value='all'>All at once</option>
+        <option value='one'>One at a time</option>
+      </select></div>
+    <button onclick="makeEWS()">Make</button>
+    <div>Questions Selected:&nbsp;<span id='numSelectedQ' style="width:3em;display:inline-block;">0</span></div>
+  </div>
+
+  <div id='spacer' style="margin-top:1.5cm;"></div>
+
+  <ul id='instructions'>
+    <li>Click the section headings to expand to see subsections and questions</li>
+    <li>Click the checkboxes next to the hedings or questions you want to include in your worksheet</li>
+    <li>The 'Max Questions' number at the top controls how many total question will be included in the worksheet</li>
+    <li>The 'Format' menu controls whether your worksheet will display all questions at once on a continuous page, or cycle through them one at a time. </li>
+  </ul>
+
+  <div id='chooser'>
+    <div id='subheader-'></div>
+  </div>
+
+  <div id='questionsAll' style="margin-top:1.5cm; display:none;display:flex;flex-wrap:wrap;">
+    <div id='wrapper-all' class='wrapper'></div>
+    <div id='results-all' class='results' style="display:none;"></div>
+  </div>
+
+  <div id='questionCount' class='questionCounter' style="margin-top:0.5cm;display:none;"></div>
+  <div id='questionsOne' class='wrapper questionContainer' style="margin-top:0.5cm; height:75%; display:none;">
+    <div id='output-one' class='outputFixed'></div>
+    <div id='inputWrapper-one' class='input'>
+      <div id='caret-one' class='caret'>></div>
+      <div id='input-one' class='inputField' contenteditable=true></div>
+    </div>
+    <div id='result-one' class='result'></div>
+  </div>
+
+  <script>
+
+    var questionsGroups = {
+      'math': {
+
+        /* ********************************** */
+        '$$ Numbers up to 100.  Counting forward and backward by ones.  Introduction to  addition and subtractions.': {
+          'Counting and comparing using pictures': {
+            'Counting items, under 10': [
+              ['math-counting-countOneImage',{}],
+               ["math-counting-countOneOfSeveralImages", {numTotal: 8,numDifferent: 2
+              }]
+            ],
+            'Comparing counts under 10':[
+              ["math-counting-imageCountComparison",{}],
+              ['math-data-chartComparisons',{chartType:'bar',n:2}]
+            ],
+            "Comparing Sizes":[
+              ["math-sizes-imageSizeComparison", {n: 2}],
+              ['math-data-chartComparisons',{chartType:'pie',n:2}]
+            ]
+          },
+          'Numbers up to 10': {
+            'Counting numbers, up to 10':['math-counting-countingSequence',{start:[0,5],step:1,n:6}],
+            'Comparing two numbers up to 10':["math-numbers-compare", {n:2,max:10}],
+            "Comparing three sizes": [
+              ["math-sizes-imageSizeComparison", {n: 3}],
+              ['math-data-chartComparisons',{chartType:'pie',n:3}]
+            ],
+            'Ordering three numbers':['math-orderNumbers',{max:10,n:3}]
+          },
+          'Numbers to 20 and preparing for addition':{
+            'Numbers up to 20':{
+              'Counting up to 20':[
+                ['math-counting-countingSequence',{start:[0,15],step:1,nAfter:2}],
+                ['math-counting-countingSequence',{start:[0,15],step:1,nAfter:2,reverse:true}]
+              ],
+              'Comparing two numbers up to 20':["math-numbers-compare", {n:3,max:20}],
+              "Comparing sizes": [
+                ["math-sizes-imageSizeComparison", {n: 4}],
+                ['math-data-chartComparisons',{chartType:'pie',n:4}]
+              ],
+              'Ordering numbers':['math-orderNumbers',{max:20,n:3}]
+            },
+            'Addition':{
+              'Counting ahead':[
+                ['math-counting-countingSequence',{start:[0,7],step:1,nBlank:2,nAfter:0}],
+                ['math-counting-countingSequence',{start:[0,6],step:1,nBlank:3,nAfter:0}],
+              ],
+              'Adding 1 with pictures':[
+                ['math-forwardAddition',{termRanges:[[1,6],[1,1]],shuffle:false,answerRange:[1,10],format:'image'}]
+              ]
+            }
+          },
+          'Numbers to 30 and Simple Addition': {
+            'Numbers up to 30':{
+              'Counting':[
+                ['math-counting-countingSequence',{start:[0,25],step:1,nAfter:2}],
+                ['math-counting-countingSequence',{start:[0,25],step:1,nAfter:2,reverse:true}]
+              ],
+              'Comparing':[
+                ["math-numbers-compare", {n:3,max:30}],
+                ['math-data-chartComparisons',{chartType:'bar',n:3}]
+              ],
+              'Ordering':['math-orderNumbers',{max:30,n:3}],
+              'Reading Numbers':[
+                ['math-numbers-reading',{top:'word',min:1,max:30}],
+                ['math-numbers-reading',{top:'number',min:1,max:30}]
+              ]
+            },
+            'Addition':{
+              'Counting ahead':[
+                ['math-counting-countingSequence',{start:[0,7],step:1,nBlank:2,nAfter:0}],
+                ['math-counting-countingSequence',{start:[0,6],step:1,nBlank:3,nAfter:0}],
+              ],
+              'Addition on your fingers':[
+                ['math-forwardAddition',{termRanges:[[0,5],[0,5]],answerRange:[1,10],format:'image'}],
+                ['math-forwardAddition',{termRanges:[[0,5],[0,5]],answerRange:[1,10]}],
+                ['math-forwardAddition',{termRanges:[[0,5],[0,5]],answerRange:[1,10],format:'word'}],
+                ['math-data-howManyPairChart',{n:2,min:1,max:5}]
+              ],
+              'Adding 1 up to 20':[
+                ['math-forwardAddition',{termRanges:[[0,19],[1,1]],answerRange:[0,20]}],
+                ['math-forwardAddition',{termRanges:[[0,19],[1,1]],answerRange:[0,20],format:'word'}]
+              ]
+            }
+          }
+        },
+
+      /* ********************************** */
+      '$$ Additon and Subtraction on your fingers.': {
+        'Numbers up to 50 and Simple Subtraction':{
+          'Numbers up to 50':{
+            'Counting':[
+              ['math-counting-countingSequence',{start:[0,45],step:1,nAfter:2}],
+              ['math-counting-countingSequence',{start:[0,45],step:1,nAfter:2,reverse:true}]
+            ],
+            'Comparing':["math-numbers-compare", {n:4,max:50}],
+            'Ordering':['math-orderNumbers',{max:50,n:4}]
+          },
+          'Addition':{
+            'Addition on your fingers':[
+              ['math-forwardAddition',{termRanges:[[1,9],[1,5]],answerRange:[1,10]}],
+              ['math-forwardAddition',{termRanges:[[1,9],[1,5]],answerRange:[1,10],format:'word'}],
+              ['math-data-howManyPairChart',{n:2,min:1,max:10}],
+              ['math-forwardAddition',{termRanges:[[0,19],[1,1]],answerRange:[0,20]}],
+            ],
+          },
+          'Subtraction':{
+            'Subtracting 1 up to 20':[
+              ['math-arithmetic',{sign:'-',shuffle:false,termRanges:[[0,20],[1,1]],answerRange:[0,20]}],
+              ['math-arithmetic',{sign:'-',shuffle:false,termRanges:[[0,20],[1,1]],answerRange:[0,20],format:'word'}],
+              ['math-forwardAddition',{termRanges:[[0,19],[1,1]],answerRange:[0,20],format:'word'}]
+            ],
+            'Subtraction on your fingers':[
+              ['math-arithmetic',{sign:'-',termRanges:[[0,5],[0,5]],answerRange:[0,5],format:'image'}],
+              ['math-arithmetic',{sign:'-',termRanges:[[0,5],[0,5]],answerRange:[0,5]}],
+              ['math-arithmetic',{sign:'-',termRanges:[[0,5],[0,5]],answerRange:[0,5],format:'word'}]
+            ]
+          }
+        },
+        'Numbers up to 100':{
+          'Numbers up to 100':{
+            'counting':[
+              ['math-counting-countingSequence',{start:[0,95],step:1,n:6}],
+              ['math-counting-countingSequence',{start:[0,95],step:1,n:6,reverse:true}]
+            ],
+            'Comparing':["math-numbers-compare", {n:4,max:100}],
+            'Ordering':['math-orderNumbers',{max:100,n:4}],
+            'Reading Numbers':[
+              ['math-numbers-reading',{top:'word',min:1,max:100}],
+              ['math-numbers-reading',{top:'number',min:1,max:100}]
+            ]
+          },
+          'Addition':{
+            'Addition up to 100 using fingers':[
+              ['math-forwardAddition',{termRanges:[[0,10],[0,90]],answerRange:[1,100]}],
+              ['math-forwardAddition',{termRanges:[[0,10],[0,90]],answerRange:[1,100],format:'word'}]
+            ],
+            'Inverse Addition on your fingers':[
+              ['math-arithmetic',{blank:'ab',termRanges:[[1,5],[1,5]],answerRange:[1,10],format:'image'}],
+              ['math-arithmetic',{blank:'ab',termRanges:[[1,5],[1,5]],answerRange:[1,10]}],
+              ['math-arithmetic',{blank:'ab',termRanges:[[1,5],[1,5]],answerRange:[1,10],format:'word'}],
+              ['math-data-howManyMoreChart',{n:2,max:5,min:1}]
+            ]
+          },
+          'Subtraction':{
+            'Subtraction up to 100 using fingers':[
+              ['math-arithmetic',{sign:'-',shuffle:false,termRanges:[[0,100],[0,10]],answerRange:[0,100]}],
+              ['math-arithmetic',{sign:'-',shuffle:false,termRanges:[[0,100],[0,10]],answerRange:[0,100],format:'word'}]
+            ]
+          }
+      }},
+
+
+      /* ********************************** */
+      '$$Numbers up to 1000, Counting By, Place Values, Gropuing, Addition with Carrying, Subtraction with Borrowing': {
+          'Numbers to 200 and Preparing for carrying': {
+            'Numbers up to 200':{
+              'counting':[
+                ['math-counting-countingSequence',{start:[0,195],step:1,n:6}],
+                ['math-counting-countingSequence',{start:[0,195],step:1,n:6,reverse:true}]
+              ],
+              'Comparing':["math-numbers-compare", {n:4,max:200}],
+              'Ordering':['math-orderNumbers',{max:200,n:4}],
+              'Reading Numbers':[
+                ['math-numbers-reading',{top:'word',min:100,max:200}],
+                ['math-numbers-reading',{top:'number',min:100,max:200}]
+              ]
+            },
+            'Addition preparation for carrying':{
+              'Making 10':['math-forwardAddition',{blank:'ab',termRanges:[[1,9],[1,9]],answerRange:[10,10]}],
+              'Sums up to 20':['math-forwardAddition',{blank:'c',termRanges:[[1,9],[1,9]],answerRange:[10,19]}]
+            }
+          },
+          'Place Value': {
+            'Place Value':[
+              ["math-numbers-placeValueFrom",{}],
+              ['math-numbers-placeValueTo',{format:'words'}]
+            ]
+          },
+          'B3': {
+            // 'Addition tricks':[],
+            // 'Counting by XXX':[]
+          },
+          'B4':{
+            "Counting by 10's":['math-counting-countingSequence',{start:[0,60],offset:false,step:10,n:6}]
+          },
+          'B5':{
+
+            'Position in line':[
+              [`math-positionInLineA`,{}],
+              [`math-positionInLineB`,{}]
+            ]},
+            'Numbers up to 1000':{
+              'Numbers up to 1000':{
+                'counting':[
+                  ['math-counting-countingSequence',{start:[0,995],step:1,n:6}],
+                  ['math-counting-countingSequence',{start:[0,995],step:1,n:6,reverse:true}]
+                ],
+                'Comparing':["math-numbers-compare", {n:4,max:1000}],
+                'Ordering':['math-orderNumbers',{max:1000,n:4}],
+                'Reading Numbers':[
+                  ['math-numbers-reading',{top:'word',min:1,max:1000}],
+                  ['math-numbers-reading',{top:'number',min:1,max:1000}]
+                ]
+            }
+          }
+        },
+
+
+        /* ********************************** */
+        'Level C': {
+          'Introduction to multiplication': {
+            "Multiplication as Addition": [
+              ["math-multiplication-timePlusMatching", { top: "times" }],
+              ["math-multiplication-timePlusMatching", { top: "plus" }],
+            ],
+            'Multiplying by 0':['math-forwardMultiplication',{termRanges:[[0,0],[1,10]]}],
+            'Multiplying by 1':['math-forwardMultiplication',{termRanges:[[1,1],[1,10]]}],
+          },
+          'Rounding': {
+            "Rounding to 10's up to 100": ['math-rounding',{rountTo:10,max:100}],
+            "Rounding to 10's up to 1000": ['math-rounding',{roundTo:10,max:1000}],
+            "Rounding to 100's up to 1000": ['math-rounding',{roundTo:100,max:1000}],
+            "Rounding to 5's up to 100": ['math-rounding',{roundTo:5,max:100}],
+            'Multiplying by 10':['math-forwardMultiplication',{termRanges:[[10,10],[1,10]]}],
+            'Multiplying by 2':['math-forwardMultiplication',{termRanges:[[2,2],[1,10]]}]
+          },
+          'C3': {}
+        }
+      },
+      'OTHER':{
+        'Something':{}
+      }
+    };
+
+    var levelVal, sublevelVal
+
+    function traverseGroups(arg, branchFunction, leafFunction, trail = []) {
+      branchFunction(arg, trail);
+      if (typeof(arg)=='string') {
+        leafFunction([arg,{}],trail);
+      } else if (arg instanceof Array) {
+        if (arg[0] instanceof Array || typeof(arg[1])=='string') {
+          arg.map((x) => {
+              leafFunction(x, trail);
+            })
+        } else {
+          leafFunction(arg,trail);
+        }
+      } else if (arg instanceof Object) {
+        for (const key in arg) {
+          traverseGroups(
+            arg[key],
+            branchFunction,
+            leafFunction,
+            trail.concat([key])
+          );
+        }
+      }
+    }
+
+    traverseGroups(
+      questionsGroups,
+      (arg, trail,level, sublevel) => {
+        if (trail.length > 0) {
+          var prefix='';
+          if (trail.length==1) {
+            levelVal = 64;
+            prefix=''
+          }
+          else if (trail.length==2) {
+            levelVal = levelVal + 1;
+            prefix = 'Level '+ String.fromCharCode(levelVal);
+            sublevelVal = 0;
+          } else if (trail.length ==3) {
+            sublevelVal = sublevelVal+1;
+            prefix = String.fromCharCode(levelVal) + String(sublevelVal) + ' -';
+          }
+          const [wrapperCat, qCat] = questionLevelContainer(prefix+' '+trail[trail.length - 1], trail.join('-'), 'categoryheader');
+          wrapperCat.style['font-size'] = Math.max(15, 30 - 5 * (trail.length - 1))
+          wrapperCat.style['font-family'] = ['Arial', 'Times', 'Courier','Verdana'][trail.length - 1 % 3]
+          document.getElementById('subheader-' + trail.slice(0, trail.length - 1).join('-')).appendChild(wrapperCat)
+        }
+      },
+      (arg, trail) => {
+        var q = Question.create(...arg);
+        q.id = `${trail.join('-')}-${q.id}`
+        q.write({
+          id: document.getElementById('subheader-' + trail.join('-')).id,
+          answer: true,
+          description: arg,
+          making: true
+        })
+      }
+    )
+
+
+    traverseGroups(
+      questionsGroups,
+      (arg, trail) => {
+        if (trail.length > 0) {
+          addChildVisibilityToggler(trail)
+        };
+        if (trail.length > 2) {
+          document.getElementById('subheader-click-wrapper-' + trail.join('-') + '-').click();
+        };
+      },
+      () => {}
+    )
+
+
+    /*
+        var fullParams = new URLSearchParams(window.location.search);
+
+        var maxq = fullParams.get('maxq');
+        var formatPar = fullParams.get('format') || "one";
+        var questionsGroups = {};
+
+        var bundlePar = fullParams.get('bundle');
+        var labelPar = fullParams.get('label');
+
+         presets[labelPar].map(function(row) {
+      //   Question.Bundle[bundlePar][labelPar].map(function(row) {
+          if (row instanceof Array) {
+            Question.create(...row)
+          } else {
+            Question.create(row,{})
+          }
+        })
+
+
+        var startBool = fullParams.get('start') || 'true';
+        if (startBool == 'true') {
+          start();
+        }
+
+        // generate the full question tree with links
+        if (false) {
+
+          var allTable = document.createElement('div')
+          allTable.id='allTable';
+          allTable.innerHTML='';
+          document.querySelector('body').appendChild(allTable)
+
+          // generate tree
+          fullQuestionTree();
+
+          // write the links
+          var preBlank=false, firstLink=true, depth=1;
+          traverseQuestionsTree(
+                questionsGroups,
+                (arg, trail) => {
+                  if (trail.length>0) {
+                    const tail = trail[trail.length-1];
+                    const most = trail.slice(0,trail.length-1);
+                    if (arg instanceof Array) {
+                      const prefix = window.location.href.split('?')[0];
+                      if (firstLink) {
+                        allTable.innerHTML +=`${Array(trail.length-1).fill('_').join('')}`;
+                        firstLink=false;
+                      }
+                      // allTable.innerHTML +=`<a href=${prefix}?bundle=${trail.join('-')}$label=${tail}>${tail}</a><br>`;
+                      allTable.innerHTML +='<a href=\"'+prefix+'?bundle='+most.join('-')+'&label='+tail+'\">'+tail+'</a>, ';
+                      preBlank=true;
+                    } else {
+                      firstLink=true;
+                      if (preBlank) {
+                        allTable.innerHTML += '<br>';
+                        preBlank=false;
+                      }
+                      allTable.innerHTML +=`${Array(trail.length-1).fill('_').join('')}`;
+                      allTable.innerHTML +=`${tail}<br>`;
+                    }
+                  }
+
+                },
+                (arg, trail) => {
+                  // allTable.innerHTML +=`${Array(trail.length).fill('~').join('')}`;
+                  // allTable.innerHTML +=`${typeof(arg)=='string'?arg:arg[0]}<br>`;
+                }
+              )
+
+        }
+    */
+  </script>
+
+
+</body>
+
+</html>

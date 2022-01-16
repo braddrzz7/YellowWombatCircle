@@ -1,0 +1,36 @@
+
+.result {
+  background: yellow;
+  color:white;
+  font-size:24;
+}
+
+.output {
+  background: white;
+  border: solid black 3px;
+}
+
+.input {
+  background:whitesmoke;
+  color:darkgreen;
+  border: solid 3px gray;
+  font-size:24;
+}
+
+body {
+  background:yellow;
+}
+
+.prompt {
+  color:black;
+}
+
+.content, .container {
+  font-size:30;
+  color: black;
+  background:white;
+}
+
+.caret {
+  color:darkgreen;
+}

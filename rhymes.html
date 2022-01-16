@@ -1,0 +1,92 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.core.min.js"></script>
+  <script src="util/misc.js"></script>
+  <script src="wsg/js/contentLists.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style>
+    .container {
+      border: solid darkgray 5px;
+      background: lightgray;
+      margin:20px;
+      padding:10px;
+    }
+    .item {
+      background: white;
+      font-family: courier, monospace;
+      font-size:20;
+    }
+    .column {
+      background:white;
+      border:solid 1px black;
+      margin:10px;
+      padding:8px;
+      text-align:end;
+    }
+    .header {
+      width:100%;
+      text-align:center;
+      font-size:32;
+      font-weight:bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id='cvc' class='container' style='display:flex;flex-wrap:wrap;'></div>
+  <div id='all' class='container' style='display:flex;flex-wrap:wrap;'></div>
+
+</body>
+
+<script>
+
+  var makeOneRhymingColumn = function(key,array) {
+    var col = $('<div>',{'class':'column'})
+    col.append($('<div>',{'class':'item','html':key.toUpperCase()}).css({'font-weight':'bold'}))
+    array.map(function(word) {
+      col.append($('<div>',{'class':'item','html':word.toUpperCase()}))
+    })
+
+    return col;
+  }
+
+  var rhymesObject = rhymingWordSets()
+  var keys = Object.keys(rhymesObject)
+  var rhymingArray = keys.map((k)=>[k,rhymesObject[k]])
+  rhymingArray = rhymingArray.sort((a,b)=>(b[1].length-a[1].length))
+  // CVC
+  $('#cvc').append($('<div>',{'text':'CVC WORDS','class':'header'}))
+  var cvcArray = rhymingArray.filter((x)=>(x[0].length===2 && isVowel(x[0][0]))&& !isVowel(x[0][1]))
+  cvcArray = cvcArray.map(row => [row[0], row[1].filter((x)=>isCVC(x))])
+  cvcArray = cvcArray.filter(x=>x[1].length>0)
+  cvcArray = cvcArray.sort((a,b)=>(b[1].length-a[1].length))
+
+  cvcArray.map(function(row) {
+    $('#cvc').append(
+      makeOneRhymingColumn(
+        row[0],
+        row[1].sort((a,b)=>(a.length-b.length))
+      )
+    )
+  })
+
+  // ALL
+  $('#all').append($('<div>',{'text':'ALL WORDS','class':'header'}))
+  rhymingArray.map(function(row) {
+    $('#all').append(
+      makeOneRhymingColumn(
+        row[0],
+        row[1].sort((a,b)=>(a.length-b.length))
+      )
+    )
+  })
+
+  var maxWidth = Math.max(...(rhymingArray.map(row=>Math.max(...(row[1].map(x=>x.length))))))
+  $('.column').css('width',maxWidth+'em')
+
+</script>
+
+</html>
