@@ -25,7 +25,12 @@ function makeEWS() {
         allSelected.push(boxidarr.slice(boxidarr.length - 2).join("-"));
     }
   }
+  if (allSelected.length==0) {
+    var questionIDs = Object.keys(Question.all);
+    allSelected = flatten(questionIDs.map(x => Array(numAsks).fill(x)));
+  }
   allSelected = randomSample(allSelected,numAsks);
+  console.log(allSelected)
   Question.loaded = [];
   Question.allSelected = allSelected;
   const showAll = (formatPar || getSelectedOptionName("format")) === "all";
@@ -85,12 +90,12 @@ function selectorCheckboxRow(
   return wrapper;
 }
 
-function addChildVisibilityToggler(trail) {
+function addChildVisibilityToggler(trail,topPrefix) {
   const label = trail.join("-");
   document
     .getElementById("subheader-click-wrapper-" + label + "-")
     .addEventListener("click", () => {
-      const kids = document.getElementById("subheader-" + label).childNodes;
+      const kids = document.getElementById(topPrefix + label).childNodes;
       let newState, oldState;
       if (kids[0] === undefined) {
         return null;
@@ -114,12 +119,12 @@ function toggleCheckboxFunction(boxID, selector) {
 }
 
 function toggleAllQuestions() {
-  Object.keys(questionsGroups).map((cat) => {
-    Object.keys(questionsGroups[cat]).map((subcat) => {
-      toggleVisibilityFunction(`[id^='wrapper-${cat}-${subcat}-']`)();
-    });
-  });
-  toggleVisibilityFunction(`[class^='questionContainer']`)();
+  const clickableThings = document.querySelectorAll('[id^="subheader-click-wrapper-"]');
+  for (var i = 0; i < clickableThings.length; i++) {
+    if (clickableThings[i].id.split('-').length > 6) {
+      clickableThings[i].click()
+    }
+  }
 }
 
 function writeOneQuestionForOne(qst) {
@@ -376,7 +381,7 @@ function addQuestionGroupItem(item, [cat, subcat, subsubcat]) {
   questionsGroups[cat][subcat][subsubcat].push(item);
 }
 
-function questionLevelContainer(shortLabel, longLabel, headerClass) {
+function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix) {
   const wrapper = document.createElement("DIV");
   wrapper.id = "wrapper-" + longLabel;
   wrapper.classList.add("flexWide");
@@ -403,7 +408,7 @@ function questionLevelContainer(shortLabel, longLabel, headerClass) {
   }
 
   const subwrapper = document.createElement("DIV");
-  subwrapper.id = "subheader-" + longLabel;
+  subwrapper.id = topPrefix + longLabel;
   subwrapper.classList.add("subheader");
   // Object.assign(subwrapper.style,{margin:'.5mm 3mm'})
 
@@ -485,4 +490,14 @@ function pickFirst(arr1,arr2) {
 
 function pickAll(vals,mask,patt) {
 
+}
+
+function clearQuestions(n) {
+  document.getElementById("subheader-"+n.toString()+'-').remove();
+}
+
+function addQuestionHolder(n) {
+  const newDiv = document.createElement('div')
+  newDiv.id = 'subheader-'+n.toString()+'-'
+  document.getElementById('chooser').appendChild(newDiv)
 }

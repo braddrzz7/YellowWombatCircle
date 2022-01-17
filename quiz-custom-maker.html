@@ -2,13 +2,15 @@
 
 <head>
 
-  <script src="../util/util.js"></script>
+  <script src="util/util.js"></script>
   <script src="util/imageText.js"></script>
-
   <script src="qg/js/drawing.js"></script>
   <script src="qg/js/words.js"></script>
   <script src="qg/js/question.js"></script>
   <script src="qg/js/questionTypes.js"></script>
+  <script src="qg/js/q-math.js"></script>
+  <script src="qg/js/q-time.js"></script>
+  <script src="qg/js/q-language.js"></script>
   <script src="qg/js/maker.js"></script>
 
   <link rel="stylesheet" type="text/css" href="qg/css/qg.css">
@@ -20,16 +22,18 @@
 
 
   <div id='menubar' class='menubar'>
-    <div>Copies <input id='copies' type='number' value=3 min=1 max=99></input></div>
+    <div>Max Questions <input id='numAsks' type='number' value=10 min=1 max=99></input></div>
     <div>Shuffle <input id='shuffle' type='checkbox'></input></div>
     <div>Format <select id='format'>
         <option value='all'>All at once</option>
         <option value='one'>One at a time</option>
       </select></div>
-    <button onclick="start()">Start</button>
+    <button onclick="makeEWS()">Make</button>
+    <div>Questions Selected:&nbsp;<span id='numSelectedQ' style="width:3em;display:inline-block;">0</span></div>
   </div>
-
   <div id='spacer' style="margin-top:1.5cm;"></div>
+  <div id='chooser'>  </div>
+  <div id='instructions'>  </div>
 
   <div id='questionsAll' style="margin-top:1.5cm; display:none;display:flex;flex-wrap:wrap;">
     <div id='wrapper-all' class='wrapper'></div>
@@ -45,7 +49,6 @@
     </div>
     <div id='result-one' class='result'></div>
   </div>
-
   <script>
     function start() {
       document.getElementById('menubar').style.display = 'none'
@@ -82,13 +85,12 @@
 
 
     var fullParams = new URLSearchParams(window.location.search);
-
     var shuffleVar = fullParams.get('shuffle') || true;
     shuffleVar = (shuffleVar == 'true');
     document.getElementById('shuffle').checked = shuffleVar;
 
-    var copies = fullParams.get('copies') || "3";
-    document.getElementById('copies').value = copies;
+    // var copies = fullParams.get('copies') || "3";
+    // document.getElementById('copies').value = copies;
 
     var format = fullParams.get('format') || "all";
     document.getElementById('format').value = format;
@@ -123,11 +125,11 @@
     // User specified types from URL params
     var typePar, typesToRegister=[], typeObjs=[], leftRight,rightParsed
     typePar = fullParams.get('types');
-console.log(typePar)
 
     if (typeof(typePar) == 'string') {
       typePar.split('$').map(function(x,ind) {
         splt = x.split(':')
+        // console.log(splt)
         typesToRegister[ind] = splt[0]
         typeObjs[ind]={}
         splt.slice(1).forEach(function(y) {
@@ -141,12 +143,10 @@ console.log(typePar)
         })
       })
     }
-    console.log(typesToRegister)
-    console.log(typeObjs)
 
     typesToRegister.forEach((type,ind) => {
-      // registerQuestionType(questionsGroups, x)
-      Question.create(type, typeObjs[ind])
+      registerQuestionType(questionsGroups, type)
+      // Question.create(type, typeObjs[ind])
     })
 
 
@@ -170,7 +170,8 @@ console.log(typePar)
 
     var startBool = fullParams.get('start') || 'true';
     if (startBool == 'true') {
-      start();
+      // start()
+      makeEWS()
     }
   </script>
 

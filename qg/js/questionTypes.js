@@ -793,3 +793,11 @@ Bundle.define("math-numbers-fractions", {
     ["math-fractions-compareFractions", { boxes: false, n: 3 }],
   ],
 });
+
+
+Bundle.define("math-multiplication-upto10by10", {
+  "Multiplication from 0x0 up to 10x10": [
+    ['math-forwardMultiplication',{termRanges:[[0,10],[0,10]]}],
+    ['math-forwardMultiplication',{termRanges:[[2,9],[2,9]]}]
+  ]
+});

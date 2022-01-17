@@ -1339,6 +1339,10 @@ defineQuestionType(
   });
 });
 
+defineQuestionType('math-forwardMultiplication-0to10',{questionName:'math-forwardMultiplication',termRanges:[[0,10],[0,10]]});
+defineQuestionType('math-forwardMultiplication-2to9',{questionName:'math-forwardMultiplication',termRanges:[[2,9],[2,9]]});
+
+
 ["pie", "bar"].map((x) => {
   defineQuestionType(`math-numbers-comparisons-Compare ${x} chart`, {
     questionName: "math-data-chartComparisons",
