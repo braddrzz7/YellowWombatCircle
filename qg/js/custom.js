@@ -39,7 +39,6 @@ function parseAndMakeCustom() {
     // User specified types from URL params
     var typePar, typesToRegister=[], typeObjs=[], leftRight,rightParsed
     typePar = fullParams.get('types');
-
     if (typeof(typePar) == 'string') {
       typePar.split('$').map(function(x,ind) {
         splt = x.split(':')

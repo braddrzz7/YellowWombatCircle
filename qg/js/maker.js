@@ -22,14 +22,14 @@ function makeEWS() {
   for (let i = 0; i < questionsSelected.length; i++) {
     if (questionsSelected[i].name.length > 0) {
       const boxidarr = questionsSelected[i].id.split("-");
-        allSelected.push(boxidarr.slice(boxidarr.length - 2).join("-"));
+      allSelected.push(boxidarr.slice(boxidarr.length - 2).join("-"));
     }
   }
-  if (allSelected.length==0) {
+  if (allSelected.length == 0) {
     var questionIDs = Object.keys(Question.all);
     allSelected = flatten(questionIDs.map(x => Array(numAsks).fill(x)));
   }
-  allSelected = randomSample(allSelected,numAsks);
+  allSelected = randomSample(allSelected, numAsks);
   console.log(allSelected)
   Question.loaded = [];
   Question.allSelected = allSelected;
@@ -90,7 +90,7 @@ function selectorCheckboxRow(
   return wrapper;
 }
 
-function addChildVisibilityToggler(trail,topPrefix) {
+function addChildVisibilityToggler(trail, topPrefix) {
   const label = trail.join("-");
   document
     .getElementById("subheader-click-wrapper-" + label + "-")
@@ -219,13 +219,13 @@ function processInput(textInput, qst) {
     nextID = Question.loaded[myIDpos + 1];
   } else {
     idpost = "one";
-    nextID = (Question.loaded.length < Object.keys(Question.allSelected).length)?true:undefined;
+    nextID = (Question.loaded.length < Object.keys(Question.allSelected).length) ? true : undefined;
   }
 
   if (result === false && qst.attemptNumber < qst.allowedAttempts) {
     document.getElementById(`inputWrapper-${idpost}`).style["border-color"] =
       "orange";
-      qst.attemptNumber++;
+    qst.attemptNumber++;
     return null;
   }
 
@@ -255,7 +255,7 @@ function processInput(textInput, qst) {
           // ALL DONE
         } else {
           // NEXT QUESTION
-          if (qid.slice(0,2)=='q-') {
+          if (qid.slice(0, 2) == 'q-') {
             qst = Question.create(...Question.all[qid]["args"]);
           } else {
             qst = Question.create(qid);
@@ -275,7 +275,7 @@ function processInput(textInput, qst) {
         Correct: ${numCorrect}<br>
         Result: ${Math.round((100 * numCorrect) / resArray.length)}%
       `;
-      let resultContainer;
+    let resultContainer;
     if (showAll) {
       resultContainer = document.getElementById("result-all");
     } else if (showOne) {
@@ -285,7 +285,7 @@ function processInput(textInput, qst) {
       resultContainer = document.getElementById("result-one");
     }
     resultContainer.innerHTML = resultText;
-    resultContainer.style.display='flex';
+    resultContainer.style.display = 'flex';
 
   }
 }
@@ -346,15 +346,15 @@ function registerQuestionType(tree, questionString, questionCall) {
 
 function traverseQuestionsTree(arg, branchFunction, leafFunction, trail = []) {
   branchFunction(arg, trail);
-  if (typeof(arg)=='string') {
-    leafFunction([arg,{}],trail);
+  if (typeof(arg) == 'string') {
+    leafFunction([arg, {}], trail);
   } else if (arg instanceof Array) {
-    if (arg[0] instanceof Array || typeof(arg[1])=='string') {
+    if (arg[0] instanceof Array || typeof(arg[1]) == 'string') {
       arg.map((x) => {
-          leafFunction(x, trail);
-        })
+        leafFunction(x, trail);
+      })
     } else {
-      leafFunction(arg,trail);
+      leafFunction(arg, trail);
     }
   } else if (arg instanceof Object) {
     for (const key in arg) {
@@ -419,6 +419,7 @@ function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix) {
 }
 
 var questionsGroups;
+
 function fullQuestionTree() {
   if (questionsGroups == undefined) {
     questionsGroups = {
@@ -484,20 +485,20 @@ function fullQuestionTree() {
 // }
 
 
-function pickFirst(arr1,arr2) {
+function pickFirst(arr1, arr2) {
 
 }
 
-function pickAll(vals,mask,patt) {
+function pickAll(vals, mask, patt) {
 
 }
 
 function clearQuestions(n) {
-  document.getElementById("subheader-"+n.toString()+'-').remove();
+  document.getElementById("subheader-" + n.toString() + '-').remove();
 }
 
 function addQuestionHolder(n) {
   const newDiv = document.createElement('div')
-  newDiv.id = 'subheader-'+n.toString()+'-'
+  newDiv.id = 'subheader-' + n.toString() + '-'
   document.getElementById('chooser').appendChild(newDiv)
 }

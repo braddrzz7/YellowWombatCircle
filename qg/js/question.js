@@ -251,6 +251,7 @@ class QuestionMultipleChoice extends Question {
     );
   }
   setContent() {
+    console.log('setContent')
     if (this.labeled) {
       if (this.labelType == "numbers") {
         this.labels = range(1, this.choices.length + 1);
@@ -261,17 +262,24 @@ class QuestionMultipleChoice extends Question {
     } else {
       this.content = this.choices;
     }
+    console.log('answer',this.answer)
+    console.log('labels',this.labels)
+    console.log('choices',this.choices)
+    console.log('content',this.content)
   }
   makeContentElement() {
+    console.log('makeContentElement')
+    console.log('choices',this.choices)
     const content = this.createDIV("content");
     const topcontent = this.createDIV("content");
     const choiceRow = this.createDIV(["content", this.containerClass]);
     if (this.labeled) {
-      if (this.choiceElements === undefined) {
+      // why did I add this condition? 
+      if (true || this.choiceElements === undefined) {
         this.choiceElements = [];
         this.choices.map((x) => {
           this.choiceElements.push(
-            this.createDIV(["content"], { "font-size": "30" }, x)
+            this.createDIV(["content"], { "font-size": "30" }, '&nbsp;'+x+'&nbsp;')
           );
         });
       }

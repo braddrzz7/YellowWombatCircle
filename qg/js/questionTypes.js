@@ -2,7 +2,12 @@ class Bundle {
   constructor(...args) {
     if (args.length === 1 && args[0] instanceof Object) {
       // object
-      const { category, subcategory, topic, questions } = args[0];
+      const {
+        category,
+        subcategory,
+        topic,
+        questions
+      } = args[0];
     }
 
     this.category = category;
@@ -12,10 +17,12 @@ class Bundle {
   }
   define(label, obj) {}
 }
-Bundle.pmap = function (qname, fixedPars, par, arr) {
-  return arr.map((x) => [qname, Object.assign({}, fixedPars, { par: x })]);
+Bundle.pmap = function(qname, fixedPars, par, arr) {
+  return arr.map((x) => [qname, Object.assign({}, fixedPars, {
+    par: x
+  })]);
 };
-Bundle.define = function (name, arg, sharedPars) {
+Bundle.define = function(name, arg, sharedPars) {
   const newObj = {};
   const obj = arg instanceof Array ? arrayToObject(arg) : arg;
   for (key in obj) {
@@ -26,7 +33,7 @@ Bundle.define = function (name, arg, sharedPars) {
   }
   Question.Bundle[name] = newObj;
 };
-Bundle.defineOneQ = function (name, qname, sharedPars, descrAndPars) {
+Bundle.defineOneQ = function(name, qname, sharedPars, descrAndPars) {
   const newObj = {};
   descrAndPars.forEach((x) => {
     newObj[x[0]] = toArray(x[1]).map((y) => [
@@ -52,7 +59,9 @@ function toArrayArray(arg) {
       return [arg];
     }
   } else {
-    return [[arg]];
+    return [
+      [arg]
+    ];
   }
 }
 
@@ -68,11 +77,19 @@ Concept.Types = {};
 Bundle.define("math-counting-images", {
   "counting one type of image": [
     ["math-counting-countOneImage", {}],
-    ["math-counting-countOneImage", { answerRange: [5, 10] }],
+    ["math-counting-countOneImage", {
+      answerRange: [5, 10]
+    }],
   ],
   "counting a subset of the images": [
-    ["math-counting-countOneOfSeveralImages", { numTotal: 10, numDifferent: 2 }],
-    ["math-counting-countOneOfSeveralImages", { numTotal: 15, numDifferent: 3 }],
+    ["math-counting-countOneOfSeveralImages", {
+      numTotal: 10,
+      numDifferent: 2
+    }],
+    ["math-counting-countOneOfSeveralImages", {
+      numTotal: 15,
+      numDifferent: 3
+    }],
   ],
 });
 
@@ -111,29 +128,49 @@ Bundle.define("math-counting-images", {
 Bundle.define("math-comparisons-Number Comparisions", {
   "Whole Numbers": [2, 3, 4].map((x) => [
     "math-numbers-compare",
-    { n: x, min: 0, max: 20 },
+    {
+      n: x,
+      min: 0,
+      max: 20
+    },
   ]),
 });
 
 Bundle.define("math-comparisons-Count Comparisions", {
-  "Image Counts": ["math-counting-imageCountComparison", { min: 1, max: 5 }],
+  "Image Counts": ["math-counting-imageCountComparison", {
+    min: 1,
+    max: 5
+  }],
   "Bar charts": [2, 3, 4].map((x) => [
     "math-data-chartComparisons",
-    { n: x, min: 0, max: 10, chartType: "bar" },
+    {
+      n: x,
+      min: 0,
+      max: 10,
+      chartType: "bar"
+    },
   ]),
 });
 
 Bundle.define("math-comparisons-Size Comparisions", {
   "Image Sizes": [
-    ["math-sizes-imageSizeComparison", { n: 3 }],
-    ["math-sizes-imageSizeComparison", { n: 4 }],
+    ["math-sizes-imageSizeComparison", {
+      n: 3
+    }],
+    ["math-sizes-imageSizeComparison", {
+      n: 4
+    }],
   ],
 });
 
 Bundle.define("math-numbers-whole numbers", {
   "Reading bar charts": [
-    ["math-data-howManyChart", { n: 2 }],
-    ["math-data-howManyChart", { n: 4 }],
+    ["math-data-howManyChart", {
+      n: 2
+    }],
+    ["math-data-howManyChart", {
+      n: 4
+    }],
   ],
 });
 
@@ -626,8 +663,11 @@ Question.Bundle["math-subtraction-whole numbers-forward subtraction"] = {
 
 Bundle.defineOneQ(
   "math-subtraction-whole numbers-Subtract up to",
-  "math-arithmetic",
-  { sign: "-", blank: "c", shuffle: false },
+  "math-arithmetic", {
+    sign: "-",
+    blank: "c",
+    shuffle: false
+  },
   [10, 20, 50, 100].map((x) => [
     x,
     {
@@ -676,8 +716,11 @@ Bundle.defineOneQ(
 
 Bundle.defineOneQ(
   "math-multiplication-forward multilpication of whole numbers",
-  "math-arithmetic",
-  { sign: "*", blank: "c", shuffle: true },
+  "math-arithmetic", {
+    sign: "*",
+    blank: "c",
+    shuffle: true
+  },
   [
     [
       "Multiplying by zero",
@@ -731,8 +774,7 @@ Bundle.defineOneQ(
     ],
     [
       "Multiplying up to 5 by 5",
-      [
-        {
+      [{
           answerRange: [1, 10000],
           termRanges: [
             [1, 5],
@@ -754,50 +796,107 @@ Bundle.defineOneQ(
 
 Bundle.define("math-multiplication-relation to addition", {
   "Equivalent expressions": [
-    ["math-multiplication-timePlusMatching", { top: "times" }],
-    ["math-multiplication-timePlusMatching", { top: "plus" }],
+    ["math-multiplication-timePlusMatching", {
+      top: "times"
+    }],
+    ["math-multiplication-timePlusMatching", {
+      top: "plus"
+    }],
   ],
 });
 
 Question.Bundle["math-time-clock reading"] = {
   "Times to the hour": [
-    ["math-time-clockTime", { minuteIncrement: 60, minuteMarkers: false }],
+    ["math-time-clockTime", {
+      minuteIncrement: 60,
+      minuteMarkers: false
+    }],
   ],
-  "Times to the half hour": [["math-time-clockTime", { minuteIncrement: 30 }]],
-  "Times to the quarter hour": [["math-time-clockTime", { minuteIncrement: 15 }]],
-  "Times to five minute increments": [["math-time-clockTime", { minuteIncrement: 5 }]],
-  "Time to the minute": [["math-time-clockTime", { minuteIncrement: 1 }]],
+  "Times to the half hour": [
+    ["math-time-clockTime", {
+      minuteIncrement: 30
+    }]
+  ],
+  "Times to the quarter hour": [
+    ["math-time-clockTime", {
+      minuteIncrement: 15
+    }]
+  ],
+  "Times to five minute increments": [
+    ["math-time-clockTime", {
+      minuteIncrement: 5
+    }]
+  ],
+  "Time to the minute": [
+    ["math-time-clockTime", {
+      minuteIncrement: 1
+    }]
+  ],
 };
 
 Question.Bundle["math-place value-whole numbers"] = {
-  "Reading whole numbers": [["math-numbers-placeValueFrom", {}]],
+  "Reading whole numbers": [
+    ["math-numbers-placeValueFrom", {}]
+  ],
   "Building whole numbers": [
-    ["math-numbers-placeValueTo", { format: "numbers" }],
-    ["math-numbers-placeValueTo", { format: "words" }],
+    ["math-numbers-placeValueTo", {
+      format: "numbers"
+    }],
+    ["math-numbers-placeValueTo", {
+      format: "words"
+    }],
   ],
 };
 Question.Bundle["math-place value-decimals"] = {
-  "Reading decimal numbers": [["math-numbers-placeValueFrom", { decimalDigits: 1 }]],
+  "Reading decimal numbers": [
+    ["math-numbers-placeValueFrom", {
+      decimalDigits: 1
+    }]
+  ],
   // 'Building whole numbers':[['math-numbers-placeValueTo',{format:'numbers'}],['math-numbers-placeValueTo',{format:'words'}]]
 };
 
 Bundle.define("math-numbers-fractions", {
   Equivalence: [
-    ["math-fractions-equivalentFractions", { boxes: true }],
-    ["math-fractions-equivalentFractions", { boxes: false }],
+    ["math-fractions-equivalentFractions", {
+      boxes: true
+    }],
+    ["math-fractions-equivalentFractions", {
+      boxes: false
+    }],
   ],
   Comparisons: [
-    ["math-fractions-compareFractions", { boxes: true }],
-    ["math-fractions-compareFractions", { boxes: true, n: 3 }],
-    ["math-fractions-compareFractions", { boxes: false }],
-    ["math-fractions-compareFractions", { boxes: false, n: 3 }],
+    ["math-fractions-compareFractions", {
+      boxes: true
+    }],
+    ["math-fractions-compareFractions", {
+      boxes: true,
+      n: 3
+    }],
+    ["math-fractions-compareFractions", {
+      boxes: false
+    }],
+    ["math-fractions-compareFractions", {
+      boxes: false,
+      n: 3
+    }],
   ],
 });
 
 
 Bundle.define("math-multiplication-upto10by10", {
   "Multiplication from 0x0 up to 10x10": [
-    ['math-forwardMultiplication',{termRanges:[[0,10],[0,10]]}],
-    ['math-forwardMultiplication',{termRanges:[[2,9],[2,9]]}]
+    ['math-forwardMultiplication', {
+      termRanges: [
+        [0, 10],
+        [0, 10]
+      ]
+    }],
+    ['math-forwardMultiplication', {
+      termRanges: [
+        [2, 9],
+        [2, 9]
+      ]
+    }]
   ]
 });

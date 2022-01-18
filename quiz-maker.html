@@ -30,8 +30,8 @@
         <option value='all'>View all questions</option>
         <option value='presets'>View preset groups</option>
       </select></div>
-      <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button>
-      <div>Max Questions <input id='numAsks' type='number' value=10 min=1 max=99></input></div>
+    <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button>
+    <div>Max Questions <input id='numAsks' type='number' value=10 min=1 max=99></input></div>
     <div>Shuffle <input id='shuffle' type='checkbox'></input></div>
     <div>Format <select id='format'>
         <option value='all'>All at once</option>
@@ -45,10 +45,9 @@
 
   <ul id='instructions'>
     <li>Click the section headings to expand to see subsections and questions</li>
-    <li>Click the checkboxes next to the hedings or questions you want to include in your worksheet</li>
-    <li>The 'Copies' number at the top controls how many versions of each question will be included in the worksheet</li>
-    <li>The 'Max Questions' number at the top controls how many total question will be included in the worksheet</li>
-    <li>The 'Format' menu controls whether your worksheet will display all questions at once on a continuous page, or cycle through them one at a time. </li>
+    <li>Click the checkboxes next to the headings or questions you want to include in your quiz</li>
+    <li>The 'Max Questions' number at the top controls how many total question will be included in the quiz</li>
+    <li>The 'Format' menu controls whether your quiz will display all questions at once on a continuous page, or cycle through them one at a time. </li>
   </ul>
 
   <div id='chooser'></div>
@@ -74,31 +73,32 @@
     document.getElementById('questionsAll').style.display = 'none'
     document.getElementById('questionsOne').style.display = 'none'
 
-    function toggleView() {
-      if (toggleCounter>0) {
+    const allTags = union(flatten(Object.keys(Question.Types).map(x=>x.split('-').slice(0,-1))));
+    const allCats = union(flatten(Object.keys(Question.Types).map(x=>x.split('-').slice(0,1))));
+
+
+    function toggleView(filterPars) {
+      if (toggleCounter > 0) {
         clearQuestions(toggleCounter)
       }
       toggleCounter = toggleCounter + 1;
       addQuestionHolder(toggleCounter)
       const view = getSelectedOptionName("view");
-      if (view=='all') {
-        writeEverything(toggleCounter)
-      } else if (view=='presets') {
-        writePresets(toggleCounter)
+      if (view == 'all') {
+        writeEverything(filterPars, toggleCounter)
+      } else if (view == 'presets') {
+        writePresets(filterPars, toggleCounter)
       }
     }
 
     toggleCounter = 0;
 
-    if (window.location.search.length > 0) {
-      parseAndMakeCustom()
-    } else {
-      toggleView()
-    }
+    var fullParams = new URLSearchParams(window.location.search);
 
-    // write new div with correct id
-    // delete old div
+    const cats =  fullParams.get('cat') || '';
+    const tags = fullParams.get('tag') || ''
 
+    toggleView({'cats':cats,'tags':tags})
 
   </script>
 

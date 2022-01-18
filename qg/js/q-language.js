@@ -239,9 +239,11 @@ defineQuestionType("language-reading-picture words-word from picture", {
   questionClass: QuestionMultipleChoice,
   labeled: false,
   setup: (qst) => {
+    console.log(qst.labeled)
     qst.prompt = "Choose the word that best describes the picture";
     qst.images = randomSample(imageNames(), qst.n);
     qst.choices = qst.images.map((x) => imageNameFromFileName(x));
+    console.log(qst.choices)
     qst.image = randomSample(qst.images);
     qst.answer = imageNameFromFileName(qst.image);
     qst.answerIndex = qst.choices.indexOf(qst.answer);

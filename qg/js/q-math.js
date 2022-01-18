@@ -1341,6 +1341,8 @@ defineQuestionType(
 
 defineQuestionType('math-forwardMultiplication-0to10',{questionName:'math-forwardMultiplication',termRanges:[[0,10],[0,10]]});
 defineQuestionType('math-forwardMultiplication-2to9',{questionName:'math-forwardMultiplication',termRanges:[[2,9],[2,9]]});
+// defineQuestionType('math-forwardMultiplication-doublesEasy',{questionName:'math-forwardMultiplication',termRanges:[[2,2],[2,50]]});
+defineQuestionType('math-forwardMultiplication-doubles',{questionName:'math-forwardMultiplication',termRanges:[[2,2],[2,50]]});
 
 
 ["pie", "bar"].map((x) => {
@@ -1835,6 +1837,123 @@ defineQuestionType("math-multiplication-timePlusMatching", {
       ).join("+")}?`;
       qst.choices = qst.numPairs.map((x) => `${x[0]}&times;${x[1]}`);
     }
+    qst.matchMe = qst.choices[qst.answerIndex];
+    qst.choiceElements = [];
+    qst.choices.map((x) => {
+      qst.choiceElements.push(qst.createDIV([], { "font-size": "40" }, x));
+    });
+  },
+});
+
+function digits2num(arr) {
+  return arr.reduce((total,current,ind) => total+current*10**(arr.length-1-ind),0);
+}
+function digits2expandedStr(arr) {
+  const strexp = arr.map((x,ind) => x*10**(arr.length-1-ind)).join('+');
+  if (arr.length==1) {
+    return strexp;
+  } else {
+    return `(${strexp})`;
+  }
+}
+function digitsPairs2distributed(arrs) {
+  let expstrarr = []
+  for (var i = 0; i < arrs[0].length; i++) {
+    for (var j = 0; j < arrs[1].length; j++) {
+      expstrarr.push(`${arrs[0][i]*10**(arrs[0].length-1-i)}&times;${arrs[1][j]*10**(arrs[1].length-1-j)}`)
+    }
+  }
+  return expstrarr.join(' + ');
+}
+
+
+defineQuestionType("math-multiplication-expansion-matching", {
+  n: 4,
+  bDigits: 2,
+  expandTop:false,
+  expandBottom:false,
+  labeled: true,
+  labelType: "letters",
+  uniqueDigits:true,
+  difficulty:'easy',
+  questionClass: QuestionMultipleChoiceColumn,
+  setup: (qst) => {
+    const numstrs = [];
+    const numarrs = [];
+    let newnums, digitsArray;
+    const digitsArrayAns = randomInteger(1,9,2+qst.bDigits,qst.uniqueDigits)
+    digitsArray = digitsArrayAns
+    while (numstrs.length < qst.n) {
+      if (qst.difficulty=='easy') {
+        digitsArray = randomInteger(1,9,2+qst.bDigits,qst.uniqueDigits)
+      } else if (qst.difficulty=='medium'){
+        digitsArray = shuffle(digitsArray)
+      } else if (qst.difficulty=='hard') {
+        // digitsArray = [digitsArrayAns[0]].concat(shuffle(digitsArrayAns.slice(1))).concat(randomInteger(1,9,5)).slice(0,2+qst.bDigits)
+      }
+      newnums = [digitsArray.slice(0,2),digitsArray.slice(2)]
+      if (!numstrs.includes(newnums.join(','))) {
+        numstrs.push(newnums.join(','));
+        numarrs.push(newnums)
+      }
+    }
+    qst.numPairs = numarrs
+    qst.answerIndex = randomInteger(0, qst.n - 1);
+    const ans = qst.numPairs[qst.answerIndex];
+    if (qst.expandTop==false) {
+      qst.prompt = `Which expressions below is equivalent to ${digits2num(ans[0])}&times;${digits2num(ans[1])}?`;
+    } else {
+      qst.prompt = `Which expressions below is equivalent to ${digits2expandedStr(ans[0])}&times;${digits2expandedStr(ans[1])}?`;
+    }
+    if (qst.expandBottom == false) {
+      qst.choices = qst.numPairs.map((x) => (digits2expandedStr(x[0]) + ' &times; ' + digits2expandedStr(x[1])));
+    } else {
+      qst.choices = qst.numPairs.map((x) => digitsPairs2distributed(x));
+    }
+    qst.matchMe = qst.choices[qst.answerIndex];
+    qst.choiceElements = [];
+    qst.choices.map((x) => {
+      qst.choiceElements.push(qst.createDIV([], { "font-size": "25" }, x));
+    });
+  },
+});
+defineQuestionType('math-multiplication-expansion-matching1A',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:false,bDigits:1});
+defineQuestionType('math-multiplication-expansion-matching1AH',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:false,bDigits:1,difficulty:'medium'});
+defineQuestionType('math-multiplication-expansion-matching1B',{questionName:'math-multiplication-expansion-matching',expandTop:true,expandBottom:true,bDigits:1});
+defineQuestionType('math-multiplication-expansion-matching1BH',{questionName:'math-multiplication-expansion-matching',expandTop:true,expandBottom:true,bDigits:1,difficulty:'medium'});
+defineQuestionType('math-multiplication-expansion-matching1C',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:true,bDigits:1});
+defineQuestionType('math-multiplication-expansion-matching1CH',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:true,bDigits:1,difficulty:'medium'});
+defineQuestionType('math-multiplication-expansion-matching2A',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:false,bDigits:2});
+defineQuestionType('math-multiplication-expansion-matching2AH',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:false,bDigits:2,difficulty:'medium'});
+defineQuestionType('math-multiplication-expansion-matching2B',{questionName:'math-multiplication-expansion-matching',expandTop:true,expandBottom:true,bDigits:2});
+defineQuestionType('math-multiplication-expansion-matching2BH',{questionName:'math-multiplication-expansion-matching',expandTop:true,expandBottom:true,bDigits:2,difficulty:'medium'});
+defineQuestionType('math-multiplication-expansion-matching2C',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:true,bDigits:2});
+defineQuestionType('math-multiplication-expansion-matching2CH',{questionName:'math-multiplication-expansion-matching',expandTop:false,expandBottom:true,bDigits:2,difficulty:'medium'});
+
+
+defineQuestionType("math-multiplication-timesExpansionMatchingB", {
+  n: 4,
+  labeled: true,
+  labelType: "letters",
+  questionClass: QuestionMultipleChoiceColumn,
+  setup: (qst) => {
+    const numstrs = [];
+    const numarrs = []
+    while (numstrs.length < qst.n) {
+      const newnums = [
+        [randomInteger(1, 9),randomInteger(1,9)],
+        [randomInteger(2,9)]
+      ];
+      if (!numstrs.includes(newnums.join(','))) {
+        numstrs.push(newnums.join(','));
+        numarrs.push(newnums)
+      }
+    }
+    qst.numPairs = numarrs
+    qst.answerIndex = randomInteger(0, qst.n - 1);
+    const ans = qst.numPairs[qst.answerIndex];
+    qst.prompt = `Which expressions below is equivalent to (${ans[0][0]*10}+${ans[0][1]})&times;${ans[1][0]}?`;
+    qst.choices = qst.numPairs.map((x) => (''+x[0][0]*10 + '&times;' + x[1][0])+' + ' + x[0][1] + '&times;' + x[1][0]);
     qst.matchMe = qst.choices[qst.answerIndex];
     qst.choiceElements = [];
     qst.choices.map((x) => {
