@@ -466,7 +466,7 @@ Question.Bundle["math-subtraction-whole numbers-forward subtraction"] = {
       },
     ],
   ],
-  "Two multidigit numbers that can be added without borrowing": [
+  "Two multidigit numbers that can be subtracted without borrowing": [
     [
       "math-arithmetic",
       {
@@ -482,7 +482,7 @@ Question.Bundle["math-subtraction-whole numbers-forward subtraction"] = {
       },
     ],
   ],
-  "Develop fluency subtracting one digit from 10-20 to prepare for borrowing": [
+  "Develop fluency subtracting one digit from 10 to 20 to prepare for borrowing": [
     [
       "math-arithmetic",
       {
@@ -533,133 +533,6 @@ Question.Bundle["math-subtraction-whole numbers-forward subtraction"] = {
   ],
 };
 
-Question.Bundle["math-subtraction-whole numbers-forward subtraction"] = {
-  "Subtraction for one hand": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        answerRange: [1, 5],
-        termRanges: [
-          [1, 5],
-          [1, 5],
-        ],
-        shuffle: false,
-      },
-    ],
-  ],
-  "Subtractions for two hands": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        answerRange: [0, 10],
-        termRanges: [
-          [6, 10],
-          [1, 10],
-        ],
-        shuffle: false,
-      },
-    ],
-  ],
-  "Subtracting one up to 20": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        answerRange: [0, 20],
-        termRanges: [
-          [1, 20],
-          [1, 1],
-        ],
-        shuffle: false,
-      },
-    ],
-  ],
-  "Count down from the bigger number using two hands": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        answerRange: [1, 100],
-        termRanges: [
-          [10, 90],
-          [1, 10],
-        ],
-        shuffle: false,
-      },
-    ],
-  ],
-  "Two multidigit numbers that can be subtracted without borrowing": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        format: "vertical",
-        carrying: "no",
-        answerRange: [1, 200],
-        termRanges: [
-          [10, 89],
-          [10, 89],
-        ],
-      },
-    ],
-  ],
-  "Develop fluency subtracting one digit from 10-20 to prepare for borrowing": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        answerRange: [0, 20],
-        termRanges: [
-          [10, 19],
-          [1, 9],
-        ],
-        shuffle: false,
-      },
-    ],
-  ],
-  "Borowing in the ones column": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        answerRange: [0, 99],
-        termRanges: [
-          [10, 99],
-          [10, 99],
-        ],
-        carrying: "yes",
-        format: "vertical",
-        shuffle: false,
-      },
-    ],
-  ],
-  "Borrowing possible in two columns": [
-    [
-      "math-arithmetic",
-      {
-        sign: "-",
-        blank: "c",
-        answerRange: [0, 999],
-        termRanges: [
-          [100, 999],
-          [100, 999],
-        ],
-        carrying: "yes",
-        format: "vertical",
-        shuffle: false,
-      },
-    ],
-  ],
-};
 
 Bundle.defineOneQ(
   "math-subtraction-whole numbers-Subtract up to",

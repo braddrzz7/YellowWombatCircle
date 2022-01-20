@@ -6,15 +6,11 @@ function getSelectedOptionName(selectID) {
 
 var formatPar
 
-function makeEWS() {
-  document.getElementById("menubar").style.display = "none";
-  document.getElementById("chooser").style.display = "none";
-  document.getElementById("questionsOne").style.display = "none";
-  document.getElementById("questionsAll").style.display = "none";
-  document.getElementById("instructions").style.display = "none";
-  document.getElementById('questionCount').style.display = 'flex'
+function makeEWS(tab) {
 
-  const numAsks = parseInt(document.getElementById("numAsks").value);
+  /*
+    GET THE SELECTED QUESTIONS
+  */
   const questionsSelected = document.querySelectorAll(`input:checked`);
   let qname,
     qst,
@@ -25,6 +21,41 @@ function makeEWS() {
       allSelected.push(boxidarr.slice(boxidarr.length - 2).join("-"));
     }
   }
+
+  /*
+    SAVE SELECTED QUESTIONS TO LOCAL STORAGE IF LOADING IN NEW TAB
+  */
+  if (tab == 'new') {
+    // write selected quesitons to localStorage
+    const saveObj = {'questions':{},'settings':{}};
+    allSelected.map(function(qid) {
+      saveObj['questions'][qid] = Question.all[qid]['args'];
+    });
+    saveObj['settings']['MaxQuestions'] = document.getElementById('numAsks').value;
+    saveObj['settings']['format'] = getSelectedOptionName('format');
+    localStorage.setItem('questions', JSON.stringify(saveObj));
+    // open new window with 'saved' view
+    window.open(window.location.pathname + '?view=saved', '_blank');
+
+    return null;
+  }
+
+
+  /*
+    IF USING CURRENT TAB, WRITE THE QUESTIONS
+  */
+  document.getElementById("menubar").style.display = "none";
+  document.getElementById("chooser").style.display = "none";
+  document.getElementById("questionsOne").style.display = "none";
+  document.getElementById("questionsAll").style.display = "none";
+  document.getElementById("instructions").style.display = "none";
+  document.getElementById('questionCount').style.display = 'flex'
+
+
+  /*
+    CREATE THE QUESTIONS
+  */
+  const numAsks = parseInt(document.getElementById("numAsks").value);
   if (allSelected.length == 0) {
     var questionIDs = Object.keys(Question.all);
     allSelected = flatten(questionIDs.map(x => Array(numAsks).fill(x)));
@@ -60,7 +91,8 @@ function selectorCheckboxRow(
   subselectRest,
   nameMe = true,
   idPrefix,
-  fullLabel
+  fullLabel,
+  preSelected=false
 ) {
   const wrapper = document.createElement("DIV");
   Object.assign(wrapper.style, {
@@ -73,12 +105,11 @@ function selectorCheckboxRow(
     box.setAttribute("name", text);
   }
   box.id = "checkbox-" + subselectRest;
+  box.checked=preSelected;
   box.addEventListener("click", () => {
     toggleCheckboxFunction(box.id, `[id^='checkbox-${subselectRest}']`)();
     const numSelected = document.querySelectorAll(".questionCheckbox:checked")
       .length;
-    // document.getElementById('numSelectedQ').style['padding-left'] =
-    //   (3 - String(numSelected).length)+'em';
     document.getElementById("numSelectedQ").innerHTML = numSelected;
   });
   const name = document.createElement("DIV");
@@ -246,8 +277,10 @@ function processInput(textInput, qst) {
         }
         if (scroll) {
           document
-            .getElementById(`scrollAnchor-${nextID}`)
-            .scrollIntoView(false);
+            // .getElementById(`scrollAnchor-${nextID}`)
+            // .scrollIntoView(false);
+            .getElementById(`question-${nextID}`)
+            .scrollIntoView(true);
         }
       } else if (showOne) {
         const qid = Question.allSelected[Question.loaded.length];
@@ -286,6 +319,7 @@ function processInput(textInput, qst) {
     }
     resultContainer.innerHTML = resultText;
     resultContainer.style.display = 'flex';
+    resultContainer.scrollIntoView(true);
 
   }
 }
@@ -381,7 +415,7 @@ function addQuestionGroupItem(item, [cat, subcat, subsubcat]) {
   questionsGroups[cat][subcat][subsubcat].push(item);
 }
 
-function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix) {
+function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix, preSelected=false) {
   const wrapper = document.createElement("DIV");
   wrapper.id = "wrapper-" + longLabel;
   wrapper.classList.add("flexWide");
@@ -395,7 +429,8 @@ function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix) {
     "wrapper-" + longLabel + "-",
     false,
     "subheader",
-    longLabel
+    longLabel,
+    preSelected
   );
   header.id = "header-" + longLabel;
   header.classList.add(headerClass);

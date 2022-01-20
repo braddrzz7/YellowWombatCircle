@@ -21,7 +21,14 @@ questionsGroupsAll = {
       'fractions': {},
       'decimals': {}
     },
-    addition: {},
+    addition: {
+      'forward': {
+        'generic': {}
+
+
+      },
+      'inverse': {}
+    },
     subtraction: {},
     multiplication: {},
     'place value': {}
@@ -30,47 +37,74 @@ questionsGroupsAll = {
 
 questionsGroupsAll = {}
 
-function writeEverything(filterPars, n) {
-  var topPrefix = 'subheader-' + n.toString() + '-'
 
+function loadStateFromLocalStorage(questionsTree) {
+  const savedObjJSON = localStorage.getItem('questions');
+  const savedObj = JSON.parse(savedObjJSON);
+  const savedQuestions = savedObj['questions'];
+  const savedPars = savedObj['settings'];
+  qKeys = Object.keys(savedQuestions)
+  qKeys.map(key => {
+    registerQuestionType(questionsTree,
+      'A-B-C',
+      [savedQuestions[key][0], savedQuestions[key][1]]
+    )
+  })
+  // localStorage.setItem('questions', null)
+  document.getElementById('numAsks').value = savedPars['MaxQuestions'];
+  document.getElementById('format').value = savedPars['format'];
+}
+
+function loadAllQuestions(questionsTree,filterPars, n) {
+  var topPrefix = 'subheader-' + n.toString() + '-'
   const catprefix = filterPars['cats'];
   const tags = filterPars['tags'];
-
   const allBundleNames = Object.keys(Question.Bundle);
   const filteredBundleNames = allBundleNames.filter(
     x => x.startsWith(catprefix) && x.includes(tags)
   )
 
-  filteredBundleNames.forEach(bundle => {
-    let splitbundle = bundle.split('-')
-    Object.keys(Question.Bundle[bundle]).map(descr => {
-      const newBundle = splitbundle.concat([descr, '']).join('-');
-      let quests = Question.Bundle[bundle][descr];
-      if (typeof(quests[0]) === 'string') {
-        quests = [quests];
-      }
-      quests.map(arr => {
-        registerQuestionType(questionsGroupsAll, newBundle, arr)
+  if (true) {
+    filteredBundleNames.forEach(bundle => {
+      let splitbundle = bundle.split('-')
+      Object.keys(Question.Bundle[bundle]).map(descr => {
+        const newBundle = splitbundle.concat([descr, '']).join('-');
+        let quests = Question.Bundle[bundle][descr];
+        if (typeof(quests[0]) === 'string') {
+          quests = [quests];
+        }
+        console.log(newBundle)
+        console.log(quests)
+        quests.map(arr => {
+          registerQuestionType(questionsTree, newBundle, arr)
+        })
       })
     })
-  })
-
+  }
 
   const allQuestionNames = Object.keys(Question.Types);
   const filteredQuestionNames = allQuestionNames.filter(
-      x => x.startsWith(catprefix) && x.includes(tags)
-    )
-console.log(tags)
-  filteredQuestionNames.forEach(x => {
-    registerQuestionType(questionsGroupsAll, x)
-  })
+    x => x.startsWith(catprefix) && x.includes(tags)
+  )
+
+  if (true) {
+    filteredQuestionNames.forEach(x => {
+      registerQuestionType(questionsTree, x)
+    })
+  };
 
 
+
+  return questionsTree;
+}
+
+function writePageFromQuestionTree(questionsTree, n, preSelected=false) {
+  var topPrefix = 'subheader-' + n.toString() + '-';
   traverseQuestionsTree(
-    questionsGroupsAll,
+    questionsTree,
     (arg, trail) => {
       if (trail.length > 0) {
-        const [wrapperCat, qCat] = questionLevelContainer(trail[trail.length - 1], trail.join('-'), 'categoryheader', topPrefix);
+        const [wrapperCat, qCat] = questionLevelContainer(trail[trail.length - 1], trail.join('-'), 'categoryheader', topPrefix,preSelected);
         wrapperCat.style['font-size'] = Math.max(15, 30 - 5 * (trail.length - 1))
         wrapperCat.style['font-family'] = ['Arial', 'Times', 'Courier'][trail.length - 1 % 3]
         document.getElementById(topPrefix + trail.slice(0, trail.length - 1).join('-')).appendChild(wrapperCat)
@@ -87,14 +121,15 @@ console.log(tags)
       q.write({
         id: document.getElementById(topPrefix + trail.join('-')).id,
         answer: true,
+        edit: true,
         description: arg,
         making: true
       })
     }
-  )
+  );
 
   traverseQuestionsTree(
-    questionsGroupsAll,
+    questionsTree,
     (arg, trail) => {
       if (trail.length > 0) {
         addChildVisibilityToggler(trail, topPrefix)

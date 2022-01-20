@@ -2,20 +2,22 @@ function defineQuestionType(name, spec) {
   const questionClass = spec.questionClass || Question;
   const questionName = spec.questionName;
   if (typeof questionName == "string") {
-    Question.Types[name] = function (ops = {}) {
-      const newOps = Object.assign({},spec, ops);
+    Question.Types[name] = function(ops = {}) {
+      const newOps = Object.assign({}, spec, ops);
       return Question.Types[questionName](newOps);
     };
   } else {
-    Question.Types[name] = function (ops = {}) {
+    Question.Types[name] = function(ops = {}) {
       const qst = new questionClass(spec, ops);
       return qst;
     };
     if (questionClass === QuestionMultipleChoice && spec.labeled === false) {
-      Question.Types[name + " labeled"] = function (ops = {}) {
+      Question.Types[name + " labeled"] = function(ops = {}) {
         const qst = new questionClass(
           spec,
-          Object.assign({}, ops, { labeled: true })
+          Object.assign({}, ops, {
+            labeled: true
+          })
         );
         // qst.generate();
         return qst;
@@ -42,6 +44,7 @@ class Question {
     //
     this.tags = [];
     this.caseSensitive = false;
+    this.editable = [];
     Object.assign(this, defaultOps);
     Object.assign(this, userOps);
     Question.count++;
@@ -77,6 +80,23 @@ class Question {
   }
   addClass(element, cls = "") {
     element.classList.add(cls);
+  }
+  readEditBox() {
+    const editEl = document.getElementById(this.editid);
+    if (editEl != null) {
+      const argOps = this.args[1];
+      console.log('old arg ops',argOps)
+      const editobj = JSON.parse(editEl.value);
+      const editkeys = Object.keys(editobj)
+      for (var i = 0; i < editkeys.length; i++) {
+        this[editkeys[i]] = editobj[editkeys[i]];
+        argOps[editkeys[i]] = editobj[editkeys[i]];
+      }
+      this.args[1] = argOps
+      console.log('new arg ops',argOps)
+
+    }
+    // if (this.args)
   }
   setPrompt() {}
   setGuesses() {}
@@ -133,13 +153,24 @@ class Question {
     const answer = this.createDIV("answer", {}, this.answer);
     return answer;
   }
+  makeEditElement() {
+    const edit = document.createElement('textarea')
+    edit.id = this.id+'-edit';
+    this.editid = edit.id;
+    edit.style = 'width:100%;'
+    let editableObject = {}
+    this.editable.map(key => editableObject[key] = this[key])
+    edit.value = JSON.stringify(editableObject)
+    return edit;
+  }
   makeElement(ops = {}) {
     const {
       description = false,
-      prompt = true,
-      content = true,
-      answer = false,
-      making = false,
+        prompt = true,
+        content = true,
+        answer = false,
+        edit = false,
+        making = false,
     } = ops;
 
     const wrapper = this.createDIV("questionWrapper");
@@ -155,6 +186,7 @@ class Question {
       checkbox.name = this.type;
       bar.appendChild(checkbox);
 
+
       var buttonEl = document.createElement("button");
       buttonEl.innerHTML = "REFRESH";
       buttonEl.addEventListener("click", () => {
@@ -166,6 +198,7 @@ class Question {
       var labelEl = this.createDIV([], {
         display: "flex",
         "margin-left": "3mm",
+        'margin-right': '3mm',
         color: "blue",
       });
       if (typeof description === "string") {
@@ -173,6 +206,7 @@ class Question {
       }
 
       bar.appendChild(labelEl);
+
 
       wrapper.appendChild(bar);
     }
@@ -195,9 +229,16 @@ class Question {
       wrapper.appendChild(this.makeAnswerElement());
     }
 
+    if (edit) {
+      if (this.editable.length>0) {
+        wrapper.appendChild(this.makeEditElement());
+      }
+    }
+
     return wrapper;
   }
   generate() {
+    this.readEditBox();
     this.setPrompt();
     this.setContent();
     this.setGuesses();
@@ -207,14 +248,16 @@ class Question {
 }
 Question.all = {};
 Question.count = 0;
-Question.create = function (typeString, ops = {},generate=true) {
+Question.create = function(typeString, ops = {}, generate = true) {
   var arg = Question.Types[typeString];
   if (arg == undefined) {
     console.log("UNKNOWN QUESTION TYPE", typeString);
     console.log(typeString);
   }
 
-  const opsWithName = Object.assign({ type: typeString }, ops);
+  const opsWithName = Object.assign({
+    type: typeString
+  }, ops);
   var question;
   if (typeof arg == "function") {
     question = arg(opsWithName);
@@ -223,7 +266,7 @@ Question.create = function (typeString, ops = {},generate=true) {
     question = new arg["questionClass"](Object.assign(obj, opsWithName));
     // question.generate();
   }
-  if (generate==true) {
+  if (generate == true) {
     question.generate()
   }
   question.questionType = typeString;
@@ -235,15 +278,16 @@ Question.Types = {};
 class QuestionMultipleChoice extends Question {
   constructor(defaults = {}, userOps = {}) {
     super(
-      Object.assign(
-        {
+      Object.assign({
           n: 5,
           labeled: false,
           labelType: "numbers",
           labelCase: "lowercase",
           direction: "row",
           containerClass: "choiceRow",
-          choicePairCSS: { display: "block" },
+          choicePairCSS: {
+            display: "block"
+          },
         },
         defaults
       ),
@@ -251,7 +295,6 @@ class QuestionMultipleChoice extends Question {
     );
   }
   setContent() {
-    console.log('setContent')
     if (this.labeled) {
       if (this.labelType == "numbers") {
         this.labels = range(1, this.choices.length + 1);
@@ -262,24 +305,20 @@ class QuestionMultipleChoice extends Question {
     } else {
       this.content = this.choices;
     }
-    console.log('answer',this.answer)
-    console.log('labels',this.labels)
-    console.log('choices',this.choices)
-    console.log('content',this.content)
   }
   makeContentElement() {
-    console.log('makeContentElement')
-    console.log('choices',this.choices)
     const content = this.createDIV("content");
     const topcontent = this.createDIV("content");
     const choiceRow = this.createDIV(["content", this.containerClass]);
     if (this.labeled) {
-      // why did I add this condition? 
+      // why did I add this condition?
       if (true || this.choiceElements === undefined) {
         this.choiceElements = [];
         this.choices.map((x) => {
           this.choiceElements.push(
-            this.createDIV(["content"], { "font-size": "30" }, '&nbsp;'+x+'&nbsp;')
+            this.createDIV(["content"], {
+              "font-size": "30"
+            }, '&nbsp;' + x + '&nbsp;')
           );
         });
       }
@@ -287,8 +326,7 @@ class QuestionMultipleChoice extends Question {
       this.choiceElements.forEach((x, ind) => {
         const oneEl = captionElement(
           x,
-          this.labels[ind],
-          {},
+          this.labels[ind], {},
           "choice",
           this.direction
         );
@@ -313,8 +351,7 @@ class QuestionMultipleChoice extends Question {
 class QuestionMultipleChoiceColumn extends QuestionMultipleChoice {
   constructor(defaults = {}, userOps = {}) {
     super(
-      Object.assign(
-        {
+      Object.assign({
           choicePairCSS: {
             display: "flex",
             "align-items": "center",
@@ -337,8 +374,7 @@ class QuestionMultipleChoiceColumn extends QuestionMultipleChoice {
 class QuestionMultipleWords extends Question {
   constructor(defaults = {}, userOps = {}) {
     super(
-      Object.assign(
-        {
+      Object.assign({
           n: 5,
           caseness: "uppercase",
           caseSensitive: false,
@@ -363,9 +399,8 @@ class QuestionMultipleWords extends Question {
 
 ////////////////////
 
-Question.Types["other-chessPosition"] = function (ops = {}) {
-  var q = new Question(
-    {
+Question.Types["other-chessPosition"] = function(ops = {}) {
+  var q = new Question({
       labels: true,
     },
     ops
@@ -530,11 +565,11 @@ function namesList() {
 }
 
 function namesListGirl() {
-  return[ "Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Evelyn", "Abigail", "Harper", "Emily", "Elizabeth", "Avery", "Sofia", "Ella", "Madison", "Scarlett", "Victoria", "Aria", "Grace", "Chloe", "Camila", "Penelope", "Riley", "Layla", "Lillian", "Nora", "Zoey", "Mila", "Aubrey", "Hannah", "Lily", "Addison", "Eleanor", "Natalie", "Luna", "Savannah", "Brooklyn", "Leah", "Zoe", "Stella", "Hazel", "Ellie", "Paisley", "Audrey", "Skylar", "Violet", "Claire", "Bella", "Aurora", "Lucy", "Anna", "Samantha", "Caroline", "Genesis", "Aaliyah", "Kennedy", "Kinsley", "Allison", "Maya", "Sarah", "Madelyn", "Adeline", "Alexa", "Ariana", "Elena", "Gabriella", "Naomi", "Alice", "Sadie", "Hailey", "Eva", "Emilia", "Autumn", "Quinn", "Nevaeh", "Piper", "Ruby", "Serenity", "Willow", "Everly", "Cora", "Kaylee", "Lydia", "Aubree", "Arianna", "Eliana", "Peyton", "Melanie", "Gianna", "Isabelle", "Julia", "Valentina", "Nova", "Clara", "Vivian", "Reagan", "Mackenzie", "Madeline", "Brielle", "Delilah", "Isla", "Rylee", "Katherine", "Sophie", "Josephine", "Ivy", "Liliana", "Jade", "Maria", "Taylor", "Hadley", "Kylie", "Emery", "Adalynn", "Natalia", "Annabelle", "Faith", "Alexandra", "Ximena", "Ashley", "Brianna", "Raelynn", "Bailey", "Mary", "Athena", "Andrea", "Leilani", "Jasmine", "Lyla", "Margaret", "Alyssa", "Adalyn", "Arya", "Norah", "Khloe", "Kayla", "Eden", "Eliza", "Rose", "Ariel", "Melody", "Alexis", "Isabel", "Sydney", "Juliana", "Lauren", "Iris", "Emerson", "London", "Morgan", "Lilly", "Charlie", "Aliyah", "Valeria", "Arabella", "Sara", "Finley", "Trinity", "Ryleigh", "Jordyn", "Jocelyn", "Kimberly", "Esther", "Molly", "Valerie", "Cecilia", "Anastasia", "Daisy", "Reese", "Laila", "Mya", "Amy", "Teagan", "Amaya", "Elise", "Harmony", "Paige", "Adaline", "Fiona", "Alaina", "Nicole", "Genevieve", "Lucia", "Alina", "Mckenzie", "Callie", "Payton", "Eloise", "Brooke", "Londyn", "Mariah", "Julianna", "Rachel", "Daniela", "Gracie", "Catherine", "Angelina", "Presley", "Josie", "Harley", "Adelyn", "Vanessa", "Makayla", "Parker", "Juliette", "Amara", "Marley", "Lila", "Ana", "Rowan", "Alana", "Michelle", "Malia", "Rebecca", "Brooklynn", "Brynlee", "Summer", "Sloane", "Leila", "Sienna", "Adriana", "Sawyer", "Kendall", "Juliet", "Destiny", "Alayna", "Elliana", "Diana", "Hayden", "Ayla", "Dakota", "Angela", "Noelle", "Rosalie", "Joanna", "Jayla", "Alivia", "Lola", "Emersyn", "Georgia", "Selena", "June", "Daleyza", "Tessa", "Maggie", "Jessica", "Remi", "Delaney", "Camille", "Vivienne", "Hope", "Mckenna", "Gemma", "Olive", "Alexandria", "Blakely", "Izabella", "Catalina", "Raegan", "Journee", "Gabrielle", "Lucille", "Ruth", "Amiyah", "Evangeline", "Blake", "Thea", "Amina", "Giselle", "Lilah", "Melissa", "River", "Kate", "Adelaide", "Charlee", "Vera", "Leia", "Gabriela", "Zara", "Jane", "Journey", "Elaina", "Miriam", "Briella", "Stephanie", "Cali", "Ember", "Lilliana", "Aniyah", "Logan", "Kamila", "Brynn", "Ariella", "Makenzie", "Annie", "Mariana", "Kali", "Haven", "Elsie", "Nyla", "Paris", "Lena", "Freya", "Adelynn", "Lyric", "Camilla", "Sage", "Jennifer", "Paislee", "Talia", "Alessandra", "Juniper", "Fatima", "Raelyn", "Amira", "Arielle", "Phoebe", "Kinley", "Ada", "Nina", "Ariah", "Samara", ];
+  return ["Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Evelyn", "Abigail", "Harper", "Emily", "Elizabeth", "Avery", "Sofia", "Ella", "Madison", "Scarlett", "Victoria", "Aria", "Grace", "Chloe", "Camila", "Penelope", "Riley", "Layla", "Lillian", "Nora", "Zoey", "Mila", "Aubrey", "Hannah", "Lily", "Addison", "Eleanor", "Natalie", "Luna", "Savannah", "Brooklyn", "Leah", "Zoe", "Stella", "Hazel", "Ellie", "Paisley", "Audrey", "Skylar", "Violet", "Claire", "Bella", "Aurora", "Lucy", "Anna", "Samantha", "Caroline", "Genesis", "Aaliyah", "Kennedy", "Kinsley", "Allison", "Maya", "Sarah", "Madelyn", "Adeline", "Alexa", "Ariana", "Elena", "Gabriella", "Naomi", "Alice", "Sadie", "Hailey", "Eva", "Emilia", "Autumn", "Quinn", "Nevaeh", "Piper", "Ruby", "Serenity", "Willow", "Everly", "Cora", "Kaylee", "Lydia", "Aubree", "Arianna", "Eliana", "Peyton", "Melanie", "Gianna", "Isabelle", "Julia", "Valentina", "Nova", "Clara", "Vivian", "Reagan", "Mackenzie", "Madeline", "Brielle", "Delilah", "Isla", "Rylee", "Katherine", "Sophie", "Josephine", "Ivy", "Liliana", "Jade", "Maria", "Taylor", "Hadley", "Kylie", "Emery", "Adalynn", "Natalia", "Annabelle", "Faith", "Alexandra", "Ximena", "Ashley", "Brianna", "Raelynn", "Bailey", "Mary", "Athena", "Andrea", "Leilani", "Jasmine", "Lyla", "Margaret", "Alyssa", "Adalyn", "Arya", "Norah", "Khloe", "Kayla", "Eden", "Eliza", "Rose", "Ariel", "Melody", "Alexis", "Isabel", "Sydney", "Juliana", "Lauren", "Iris", "Emerson", "London", "Morgan", "Lilly", "Charlie", "Aliyah", "Valeria", "Arabella", "Sara", "Finley", "Trinity", "Ryleigh", "Jordyn", "Jocelyn", "Kimberly", "Esther", "Molly", "Valerie", "Cecilia", "Anastasia", "Daisy", "Reese", "Laila", "Mya", "Amy", "Teagan", "Amaya", "Elise", "Harmony", "Paige", "Adaline", "Fiona", "Alaina", "Nicole", "Genevieve", "Lucia", "Alina", "Mckenzie", "Callie", "Payton", "Eloise", "Brooke", "Londyn", "Mariah", "Julianna", "Rachel", "Daniela", "Gracie", "Catherine", "Angelina", "Presley", "Josie", "Harley", "Adelyn", "Vanessa", "Makayla", "Parker", "Juliette", "Amara", "Marley", "Lila", "Ana", "Rowan", "Alana", "Michelle", "Malia", "Rebecca", "Brooklynn", "Brynlee", "Summer", "Sloane", "Leila", "Sienna", "Adriana", "Sawyer", "Kendall", "Juliet", "Destiny", "Alayna", "Elliana", "Diana", "Hayden", "Ayla", "Dakota", "Angela", "Noelle", "Rosalie", "Joanna", "Jayla", "Alivia", "Lola", "Emersyn", "Georgia", "Selena", "June", "Daleyza", "Tessa", "Maggie", "Jessica", "Remi", "Delaney", "Camille", "Vivienne", "Hope", "Mckenna", "Gemma", "Olive", "Alexandria", "Blakely", "Izabella", "Catalina", "Raegan", "Journee", "Gabrielle", "Lucille", "Ruth", "Amiyah", "Evangeline", "Blake", "Thea", "Amina", "Giselle", "Lilah", "Melissa", "River", "Kate", "Adelaide", "Charlee", "Vera", "Leia", "Gabriela", "Zara", "Jane", "Journey", "Elaina", "Miriam", "Briella", "Stephanie", "Cali", "Ember", "Lilliana", "Aniyah", "Logan", "Kamila", "Brynn", "Ariella", "Makenzie", "Annie", "Mariana", "Kali", "Haven", "Elsie", "Nyla", "Paris", "Lena", "Freya", "Adelynn", "Lyric", "Camilla", "Sage", "Jennifer", "Paislee", "Talia", "Alessandra", "Juniper", "Fatima", "Raelyn", "Amira", "Arielle", "Phoebe", "Kinley", "Ada", "Nina", "Ariah", "Samara", ];
 }
 
 function namesListBoy() {
-  return [ "Liam", "Noah", "William", "James", "Logan", "Benjamin", "Mason", "Elijah", "Oliver", "Jacob", "Lucas", "Michael", "Alexander", "Ethan", "Daniel", "Matthew", "Aiden", "Henry", "Joseph", "Jackson", "Samuel", "Sebastian", "David", "Carter", "Wyatt", "Jayden", "John", "Owen", "Dylan", "Luke", "Gabriel", "Anthony", "Isaac", "Grayson", "Jack", "Julian", "Levi", "Christopher", "Joshua", "Andrew", "Lincoln", "Mateo", "Ryan", "Jaxon", "Nathan", "Aaron", "Isaiah", "Thomas", "Charles", "Caleb", "Josiah", "Christian", "Hunter", "Eli", "Jonathan", "Connor", "Landon", "Adrian", "Asher", "Cameron", "Leo", "Theodore", "Jeremiah", "Hudson", "Robert", "Easton", "Nolan", "Nicholas", "Ezra", "Colton", "Angel", "Brayden", "Jordan", "Dominic", "Austin", "Ian", "Adam", "Elias", "Jaxson", "Greyson", "Jose", "Ezekiel", "Carson", "Evan", "Maverick", "Bryson", "Jace", "Cooper", "Xavier", "Parker", "Roman", "Jason", "Santiago", "Chase", "Sawyer", "Gavin", "Leonardo", "Kayden", "Ayden", "Jameson", "Kevin", "Bentley", "Zachary", "Everett", "Axel", "Tyler", "Micah", "Vincent", "Weston", "Miles", "Wesley", "Nathaniel", "Harrison", "Brandon", "Cole", "Declan", "Luis", "Braxton", "Damian", "Silas", "Tristan", "Ryder", "Bennett", "George", "Emmett", "Justin", "Kai", "Max", "Diego", "Luca", "Ryker", "Carlos", "Maxwell", "Kingston", "Ivan", "Maddox", "Juan", "Ashton", "Jayce", "Rowan", "Kaiden", "Giovanni", "Eric", "Jesus", "Calvin", "Abel", "King", "Camden", "Amir", "Blake", "Alex", "Brody", "Malachi", "Emmanuel", "Jonah", "Beau", "Jude", "Antonio", "Alan", "Elliott", "Elliot", "Waylon", "Xander", "Timothy", "Victor", "Bryce", "Finn", "Brantley", "Edward", "Abraham", "Patrick", "Grant", "Karter", "Hayden", "Richard", "Miguel", "Joel", "Gael", "Tucker", "Rhett", "Avery", "Steven", "Graham", "Kaleb", "Jasper", "Jesse", "Matteo", "Dean", "Zayden", "Preston", "August", "Oscar", "Jeremy", "Alejandro", "Marcus", "Dawson", "Lorenzo", "Messiah", "Zion", "Maximus", "River", "Zane", "Mark", "Brooks", "Nicolas", "Paxton", "Judah", "Emiliano", "Kaden", "Bryan", "Kyle", "Myles", "Peter", "Charlie", "Kyrie", "Thiago", "Brian", "Kenneth", "Andres", "Lukas", "Aidan", "Jax", "Caden", "Milo", "Paul", "Beckett", "Brady", "Colin", "Omar", "Bradley", "Javier", "Knox", "Jaden", "Barrett", "Israel", "Matias", "Jorge", "Zander", "Derek", "Josue", "Cayden", "Holden", "Griffin", "Arthur", "Leon", "Felix", "Remington", "Jake", "Killian", "Clayton", "Sean", "Adriel", "Riley", "Archer", "Legend", "Erick", "Enzo", "Corbin", "Francisco", "Dallas", "Emilio", "Gunner", "Simon", "Andre", "Walter", "Damien", "Chance", "Phoenix", "Colt", "Tanner", "Stephen", "Kameron", "Tobias", "Manuel", "Amari", "Emerson", "Louis", "Cody", "Finley", "Iker", "Martin", "Rafael", "Nash", "Beckham", "Cash", "Karson", "Rylan", "Reid", "Theo", "Ace", "Eduardo", "Spencer", "Raymond", "Maximiliano", "Anderson", "Ronan", "Lane", "Cristian", "Titus", "Travis", "Jett", "Ricardo", "Bodhi", "Gideon", "Jaiden", "Fernando", "Mario", "Conor", "Keegan", "Ali", "Cesar", "Ellis", "Jayceon", "Walker", "Cohen", "Arlo", "Hector", "Dante", "Kyler", "Garrett", "Donovan", "Seth", "Jeffrey", "Tyson", "Jase", "Desmond", "Caiden", "Gage", "Atlas", "Major", "Devin", "Edwin", "Angelo", "Orion", "Conner", "Julius", "Marco", ];
+  return ["Liam", "Noah", "William", "James", "Logan", "Benjamin", "Mason", "Elijah", "Oliver", "Jacob", "Lucas", "Michael", "Alexander", "Ethan", "Daniel", "Matthew", "Aiden", "Henry", "Joseph", "Jackson", "Samuel", "Sebastian", "David", "Carter", "Wyatt", "Jayden", "John", "Owen", "Dylan", "Luke", "Gabriel", "Anthony", "Isaac", "Grayson", "Jack", "Julian", "Levi", "Christopher", "Joshua", "Andrew", "Lincoln", "Mateo", "Ryan", "Jaxon", "Nathan", "Aaron", "Isaiah", "Thomas", "Charles", "Caleb", "Josiah", "Christian", "Hunter", "Eli", "Jonathan", "Connor", "Landon", "Adrian", "Asher", "Cameron", "Leo", "Theodore", "Jeremiah", "Hudson", "Robert", "Easton", "Nolan", "Nicholas", "Ezra", "Colton", "Angel", "Brayden", "Jordan", "Dominic", "Austin", "Ian", "Adam", "Elias", "Jaxson", "Greyson", "Jose", "Ezekiel", "Carson", "Evan", "Maverick", "Bryson", "Jace", "Cooper", "Xavier", "Parker", "Roman", "Jason", "Santiago", "Chase", "Sawyer", "Gavin", "Leonardo", "Kayden", "Ayden", "Jameson", "Kevin", "Bentley", "Zachary", "Everett", "Axel", "Tyler", "Micah", "Vincent", "Weston", "Miles", "Wesley", "Nathaniel", "Harrison", "Brandon", "Cole", "Declan", "Luis", "Braxton", "Damian", "Silas", "Tristan", "Ryder", "Bennett", "George", "Emmett", "Justin", "Kai", "Max", "Diego", "Luca", "Ryker", "Carlos", "Maxwell", "Kingston", "Ivan", "Maddox", "Juan", "Ashton", "Jayce", "Rowan", "Kaiden", "Giovanni", "Eric", "Jesus", "Calvin", "Abel", "King", "Camden", "Amir", "Blake", "Alex", "Brody", "Malachi", "Emmanuel", "Jonah", "Beau", "Jude", "Antonio", "Alan", "Elliott", "Elliot", "Waylon", "Xander", "Timothy", "Victor", "Bryce", "Finn", "Brantley", "Edward", "Abraham", "Patrick", "Grant", "Karter", "Hayden", "Richard", "Miguel", "Joel", "Gael", "Tucker", "Rhett", "Avery", "Steven", "Graham", "Kaleb", "Jasper", "Jesse", "Matteo", "Dean", "Zayden", "Preston", "August", "Oscar", "Jeremy", "Alejandro", "Marcus", "Dawson", "Lorenzo", "Messiah", "Zion", "Maximus", "River", "Zane", "Mark", "Brooks", "Nicolas", "Paxton", "Judah", "Emiliano", "Kaden", "Bryan", "Kyle", "Myles", "Peter", "Charlie", "Kyrie", "Thiago", "Brian", "Kenneth", "Andres", "Lukas", "Aidan", "Jax", "Caden", "Milo", "Paul", "Beckett", "Brady", "Colin", "Omar", "Bradley", "Javier", "Knox", "Jaden", "Barrett", "Israel", "Matias", "Jorge", "Zander", "Derek", "Josue", "Cayden", "Holden", "Griffin", "Arthur", "Leon", "Felix", "Remington", "Jake", "Killian", "Clayton", "Sean", "Adriel", "Riley", "Archer", "Legend", "Erick", "Enzo", "Corbin", "Francisco", "Dallas", "Emilio", "Gunner", "Simon", "Andre", "Walter", "Damien", "Chance", "Phoenix", "Colt", "Tanner", "Stephen", "Kameron", "Tobias", "Manuel", "Amari", "Emerson", "Louis", "Cody", "Finley", "Iker", "Martin", "Rafael", "Nash", "Beckham", "Cash", "Karson", "Rylan", "Reid", "Theo", "Ace", "Eduardo", "Spencer", "Raymond", "Maximiliano", "Anderson", "Ronan", "Lane", "Cristian", "Titus", "Travis", "Jett", "Ricardo", "Bodhi", "Gideon", "Jaiden", "Fernando", "Mario", "Conor", "Keegan", "Ali", "Cesar", "Ellis", "Jayceon", "Walker", "Cohen", "Arlo", "Hector", "Dante", "Kyler", "Garrett", "Donovan", "Seth", "Jeffrey", "Tyson", "Jase", "Desmond", "Caiden", "Gage", "Atlas", "Major", "Devin", "Edwin", "Angelo", "Orion", "Conner", "Julius", "Marco", ];
 }
 
 function numberList() {
@@ -554,7 +589,8 @@ function numberList() {
 
 function thingList() {
   return ["car", "bike", "hat", "rock", "dollar", "toy", "apple", "cousin",
-    'pet','snack','nickel','dime','quarter'];
+    'pet', 'snack', 'nickel', 'dime', 'quarter'
+  ];
 }
 
 
@@ -572,6 +608,7 @@ function makeImageElementRow(
   });
   return wrapper;
 }
+
 function makeImageElement(filename, size = 150, css = {}) {
   var img = document.createElement("IMG");
   img.src = imagesPath + filename;

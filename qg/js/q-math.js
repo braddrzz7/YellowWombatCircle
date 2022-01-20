@@ -473,7 +473,16 @@ class QuestionArithmetic extends Question {
   }
 }
 
+// defineQuestionType('math-editable-forward-hi',{questionName:'math-arithmetic',sign:'+',blank:'c',editable:['termRanges','answerRange']});
+
 defineQuestionType('math-arithmetic',{questionClass:QuestionArithmetic});
+defineQuestionType('math-arithmetic-editable-arithmetic',{questionName:'math-arithmetic',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
+defineQuestionType('math-arithmetic-editable-addition',{questionName:'math-arithmetic',sign:'+',editable:['termRanges','answerRange','shuffle','carrying','differenceRange','format']});
+defineQuestionType('math-arithmetic-editable-inverse addition',{questionName:'math-arithmetic',sign:'+',editable:['termRanges','answerRange','shuffle','carrying','differenceRange','format']});
+defineQuestionType('math-arithmetic-editable-subtraction',{questionName:'math-arithmetic',sign:'-',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
+defineQuestionType('math-arithmetic-editable-multiplication',{questionName:'math-arithmetic',sign:'*',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
+// defineQuestionType('math-editable-arithmetic-generic',{questionName:'math-arithmetic',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
+
 defineQuestionType('math-forwardAddition',{questionName:'math-arithmetic',sign:'+',blank:'c'});
 defineQuestionType('math-forwardMultiplication',{questionName:'math-arithmetic',sign:'*',blank:'c'});
 defineQuestionType('math-forwardSubtraction',{questionName:'math-arithmetic',sign:'-',blank:'c'});

@@ -23,12 +23,12 @@ function traverseGroups(arg, branchFunction, leafFunction, trail = []) {
 }
 
 
-function writePresets(fullParams, n) {
+function writePresets(questionsTree,fullParams, n) {
   var levelVal, sublevelVal
   var topPrefix = 'subheader-' + n.toString() + '-'
 
   traverseGroups(
-    questionsGroups,
+    questionsTree,
     (arg, trail, level, sublevel) => {
       if (trail.length > 0) {
         var prefix = '';
@@ -63,7 +63,7 @@ function writePresets(fullParams, n) {
 
 
   traverseGroups(
-    questionsGroups,
+    questionsTree,
     (arg, trail) => {
       if (trail.length > 0) {
         addChildVisibilityToggler(trail, topPrefix)

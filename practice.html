@@ -25,18 +25,19 @@
 
 
   <div id='menubar' class='menubar'>
-    <div><select id='view' onchange='toggleView()'>
-        <option value='all'>View all questions</option>
-        <option value='presets'>View preset groups</option>
+    <div>View<select id='view' onchange='toggleView(filterPars)'>
+        <option value='all'>all questions</option>
+        <option value='presets'>preset groups</option>
+        <!-- <option value='saved'>saved choices</option> -->
       </select></div>
     <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button>
     <div>Max Questions <input id='numAsks' type='number' value=10 min=1 max=99></input></div>
-    <div>Shuffle <input id='shuffle' type='checkbox'></input></div>
+    <!-- <div>Shuffle <input id='shuffle' type='checkbox'></input></div> -->
     <div>Format <select id='format'>
         <option value='all'>All at once</option>
         <option value='one'>One at a time</option>
       </select></div>
-    <button onclick="makeEWS()">Make</button>
+    <button onclick="makeEWS('new')">Make</button>
     <div>Questions Selected:&nbsp;<span id='numSelectedQ' style="width:3em;display:inline-block;">0</span></div>
   </div>
 
@@ -72,8 +73,19 @@
     document.getElementById('questionsAll').style.display = 'none'
     document.getElementById('questionsOne').style.display = 'none'
 
+    //
     const allTags = union(flatten(Object.keys(Question.Types).map(x=>x.split('-').slice(0,-1))));
     const allCats = union(flatten(Object.keys(Question.Types).map(x=>x.split('-').slice(0,1))));
+
+    // settings from URL params
+    var fullParams = new URLSearchParams(window.location.search);
+    const cats =  fullParams.get('cat') || '';
+    const tags = fullParams.get('tag') || ''
+    // let view = fullParams.get('view') || 'all'
+    let view = getSelectedOptionName("view");
+    document.getElementById('view').value = view;
+
+    toggleCounter = 0;
 
 
     function toggleView(filterPars) {
@@ -83,44 +95,26 @@
       }
       toggleCounter = toggleCounter + 1;
       addQuestionHolder(toggleCounter)
-      const view = getSelectedOptionName("view");
-      if (view == 'all') {
-        questionsTree = loadAllQuestions(filterPars, toggleCounter);
+      questionsTree = {};
+      view = getSelectedOptionName("view");
+      if (fullParams.get('view') == 'saved') {
+        loadStateFromLocalStorage(questionsTree)
+        writePageFromQuestionTree(questionsTree,toggleCounter,true);
+        makeEWS('current');
+      }  else if (view == 'all') {
+        loadAllQuestions(questionsTree,filterPars, toggleCounter);
         writePageFromQuestionTree(questionsTree,toggleCounter);
       } else if (view == 'presets') {
-        writePresets(filterPars, toggleCounter)
+        // questionsGroups loaded in presets.js
+        writePresets(questionsGroups, filterPars, toggleCounter)
       }
-
     }
 
-    toggleCounter = 0;
-
-    var fullParams = new URLSearchParams(window.location.search);
-
-    const cats =  fullParams.get('cat') || '';
-    const tags = fullParams.get('tag') || ''
+    // start it up
+    var filterPars = {'cats':cats,'tags':tags};
+    toggleView(filterPars)
 
 
-    toggleView({'cats':cats,'tags':tags})
-
-
-    // if (localStorage.getItem('open')=='true') {
-    //   console.log('opening)')
-    //   toggleAllQuestions();
-    //   toggleAllQuestions();
-    //   localStorage.setItem('open',false)
-    // }
-
-    /*
-      Select questions
-      Write them to localStorage
-      "Make" opens tab in new window
-      New window checks local localStorage
-      If stuff is there,
-        load those puzzles
-        clear localStorage
-
-    */
 
   </script>
 
