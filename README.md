@@ -8,8 +8,8 @@ Run one of the top level html files to build your own practice exercises.
 ### worksheet-maker ###
 Build worksheets that can be printed.
 
-### quiz-maker ###
-Build a quiz for the computer.
+### practice ###
+Practice answering math or language questions on your computer.
 
 ### reading-card-maker ###
 Build printable cards containg pictures and basic words or phrases.
