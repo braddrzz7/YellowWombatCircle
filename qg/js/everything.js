@@ -73,8 +73,6 @@ function loadAllQuestions(questionsTree,filterPars, n) {
         if (typeof(quests[0]) === 'string') {
           quests = [quests];
         }
-        console.log(newBundle)
-        console.log(quests)
         quests.map(arr => {
           registerQuestionType(questionsTree, newBundle, arr)
         })
