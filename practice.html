@@ -14,6 +14,8 @@
   <script src="qg/js/maker.js"></script>
   <script src="qg/js/everything.js"></script>
   <script src="qg/js/presets.js"></script>
+  <script src="qg/js/presetsA.js"></script>
+  <script src="qg/js/presetsB.js"></script>
 
 
   <link rel="stylesheet" type="text/css" href="qg/css/qg.css">
@@ -26,8 +28,10 @@
 
   <div id='menubar' class='menubar'>
     <div>View<select id='view' onchange='toggleView(filterPars)'>
-        <option value='all'>all questions</option>
+      <option value='all'>all questions</option>
         <option value='presets'>preset groups</option>
+        <option value='kidA'>Kid A</option>
+        <option value='kidB'>Kid B</option>
         <!-- <option value='saved'>saved choices</option> -->
       </select></div>
     <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button>
@@ -107,6 +111,10 @@
       } else if (view == 'presets') {
         // questionsGroups loaded in presets.js
         writePresets(questionsGroups, filterPars, toggleCounter)
+      } else if (view=='kidA') {
+        writePresets(questionsGroupsA, filterPars, toggleCounter,autolabel=false)
+      } else if (view=='kidB') {
+        writePresets(questionsGroupsB, filterPars, toggleCounter,autolabel=false)
       }
     }
 

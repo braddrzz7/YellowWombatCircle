@@ -185,6 +185,7 @@ class QuestionArithmetic extends Question {
           symbolicUnknown: false,
           equationCSS: {},
           equationTermCSS: {},
+
         },
         defaults,
         userOps
@@ -382,7 +383,7 @@ class QuestionArithmetic extends Question {
   elementVertical() {
     var newCSS = {
       display: "block",
-      // 'margin-left':'40%'
+      'margin-left':'40%'
     };
     var eqnArray = this.eqn.equationArray;
     const eqStrs = eqnArray.map((x) => String(x));
@@ -475,13 +476,25 @@ class QuestionArithmetic extends Question {
 
 // defineQuestionType('math-editable-forward-hi',{questionName:'math-arithmetic',sign:'+',blank:'c',editable:['termRanges','answerRange']});
 
+/*
+  Core editable arithmetic
+*/
 defineQuestionType('math-arithmetic',{questionClass:QuestionArithmetic});
-defineQuestionType('math-arithmetic-editable-arithmetic',{questionName:'math-arithmetic',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
-defineQuestionType('math-arithmetic-editable-addition',{questionName:'math-arithmetic',sign:'+',editable:['termRanges','answerRange','shuffle','carrying','differenceRange','format']});
-defineQuestionType('math-arithmetic-editable-inverse addition',{questionName:'math-arithmetic',sign:'+',editable:['termRanges','answerRange','shuffle','carrying','differenceRange','format']});
-defineQuestionType('math-arithmetic-editable-subtraction',{questionName:'math-arithmetic',sign:'-',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
-defineQuestionType('math-arithmetic-editable-multiplication',{questionName:'math-arithmetic',sign:'*',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
-// defineQuestionType('math-editable-arithmetic-generic',{questionName:'math-arithmetic',editable:['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format']});
+[
+  ['addition-horizontal',{sign:'+'}],
+  ['addition-vertical',{sign:'+',format:'vertical'}],
+  ['addition-word',{sign:'+',format:'word'}],
+  ['addition-image',{sign:'+',format:'image'}],
+  ['addition-inverse',{sign:'+',blank:'ab'}],
+  ['subtraction',{sign:'-'}],
+  ['subtraction-inverse',{sign:'-',blank:'ab'}],
+  ['multiplication',{sign:'*'}],
+  ['multiplication-inverse',{sign:'*',blank:'ab'}],
+].map(function([name,pars]) {
+  // const edits = complement(['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format'],Object.keys(pars))
+  const edits = ['sign','blank','termRanges','answerRange','shuffle','carrying','differenceRange','format'];
+  defineQuestionType('math-arithmetic-'+name,{questionName:'math-arithmetic',editable:edits, ...pars});
+})
 
 defineQuestionType('math-forwardAddition',{questionName:'math-arithmetic',sign:'+',blank:'c'});
 defineQuestionType('math-forwardMultiplication',{questionName:'math-arithmetic',sign:'*',blank:'c'});

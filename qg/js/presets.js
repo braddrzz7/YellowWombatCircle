@@ -23,7 +23,7 @@ function traverseGroups(arg, branchFunction, leafFunction, trail = []) {
 }
 
 
-function writePresets(questionsTree,fullParams, n) {
+function writePresets(questionsTree,fullParams, n,autolabel=true) {
   var levelVal, sublevelVal
   var topPrefix = 'subheader-' + n.toString() + '-'
 
@@ -37,11 +37,11 @@ function writePresets(questionsTree,fullParams, n) {
           prefix = ''
         } else if (trail.length == 2) {
           levelVal = levelVal + 1;
-          prefix = 'Level ' + String.fromCharCode(levelVal);
+          prefix = autolabel?('Level ' + String.fromCharCode(levelVal)):'';
           sublevelVal = 0;
         } else if (trail.length == 3) {
           sublevelVal = sublevelVal + 1;
-          prefix = String.fromCharCode(levelVal) + String(sublevelVal) + ' -';
+          prefix = autolabel?(String.fromCharCode(levelVal) + String(sublevelVal) + ' -'):'';
         }
         const [wrapperCat, qCat] = questionLevelContainer(prefix + ' ' + trail[trail.length - 1], trail.join('-'), 'categoryheader', topPrefix);
         wrapperCat.style['font-size'] = Math.max(15, 30 - 5 * (trail.length - 1))
