@@ -12,6 +12,7 @@ function traverseGroups(arg, branchFunction, leafFunction, trail = []) {
     }
   } else if (arg instanceof Object) {
     for (const key in arg) {
+      if (key == 'Description') { return null };
       traverseGroups(
         arg[key],
         branchFunction,
@@ -23,9 +24,12 @@ function traverseGroups(arg, branchFunction, leafFunction, trail = []) {
 }
 
 
-function writePresets(questionsTree,fullParams, n,autolabel=true) {
+function writePresets(questionsTree,fullParams, n,autolabel=true,openLevel=2) {
   var levelVal, sublevelVal
   var topPrefix = 'subheader-' + n.toString() + '-'
+
+  // add Mixture sections
+  
 
   traverseGroups(
     questionsTree,
@@ -43,8 +47,8 @@ function writePresets(questionsTree,fullParams, n,autolabel=true) {
           sublevelVal = sublevelVal + 1;
           prefix = autolabel?(String.fromCharCode(levelVal) + String(sublevelVal) + ' -'):'';
         }
-        const [wrapperCat, qCat] = questionLevelContainer(prefix + ' ' + trail[trail.length - 1], trail.join('-'), 'categoryheader', topPrefix);
-        wrapperCat.style['font-size'] = Math.max(15, 30 - 5 * (trail.length - 1))
+        const [wrapperCat, qCat] = questionLevelContainer(prefix + ' ' + trail[trail.length - 1], trail.join('-'), 'categoryheader', topPrefix, false, descr=arg['Description']);
+        wrapperCat.style['font-size'] = Math.max(15, 20 - 4 * (trail.length - 1))
         wrapperCat.style['font-family'] = ['Arial', 'Times', 'Courier', 'Verdana'][trail.length - 1 % 3]
         document.getElementById(topPrefix + trail.slice(0, trail.length - 1).join('-')).appendChild(wrapperCat)
       }
@@ -68,7 +72,7 @@ function writePresets(questionsTree,fullParams, n,autolabel=true) {
       if (trail.length > 0) {
         addChildVisibilityToggler(trail, topPrefix)
       };
-      if (trail.length > 2) {
+      if (trail.length > openLevel) {
         document.getElementById('subheader-click-wrapper-' + trail.join('-') + '-').click();
       };
     },

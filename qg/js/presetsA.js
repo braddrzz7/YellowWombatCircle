@@ -1,10 +1,9 @@
 var questionsGroupsA = {
-  2022: {},
-  2021: {}
+  1: {}
 };
 
 
-questionsGroupsA['2022']['Jan 23']={
+questionsGroupsA['1']['A']={
   'Making 10':[
     ['math-arithmetic', {sign:'+',termRanges: [[3, 9],[0, 9]],blank:'ab', answerRange: [10, 10] }]
   ],

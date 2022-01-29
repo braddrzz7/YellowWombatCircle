@@ -899,8 +899,10 @@ defineQuestionType("math-data-chartComparisons", {
   n: 3,
   min: 1,
   max: 10,
+  labeled: true,
+  labelType: "letters",
   chartType: "bar",
-  questionClass: QuestionMultipleChoice,
+  questionClass: QuestionMultipleChoiceColumn,
   setup: (qst) => {
     qst.item = randomSample(thingList());
     qst.items = pluralize(2, qst.item, false);
@@ -916,19 +918,18 @@ defineQuestionType("math-data-chartComparisons", {
         ? Math.max(...qst.values)
         : Math.min(...qst.values);
     qst.answer = qst.choices[qst.values.indexOf(extremeVal)];
-  },
-  makeContentElement: (qst) => {
-    if (qst.chartType === "bar") {
-      return barChart(qst.values, qst.choices, {
-        title: `Number of ${qst.items} per person`,
-        xlabel: qst.items.toUpperCase(),
-      });
-    } else if (qst.chartType === "pie") {
-      return pieChart(qst.values, qst.choices, {
-        title: `Number of ${qst.items} per person`,
-      });
-    }
-  },
+    qst.answerIndex = qst.choices.indexOf(qst.answer);
+      if (qst.chartType === "bar") {
+        qst.topcontent =  barChart(qst.values, qst.choices, {
+          title: `Number of ${qst.items} per person`,
+          xlabel: qst.items.toUpperCase(),
+        });
+      } else if (qst.chartType === "pie") {
+        qst.topcontent =  pieChart(qst.values, qst.choices, {
+          title: `Number of ${qst.items} per person`,
+        });
+      }
+  }
 });
 
 defineQuestionType("math-data-howManyChart", {
@@ -1536,21 +1537,24 @@ defineQuestionType("math-numbers-placeValueFrom", {
   ],
   decimalPlaces: ["tenths", "hundredths"],
   setup: (qst) => {
-    const absMax = Math.max(Math.abs(qst.min), Math.abs(qst.max));
-    const intDigits = 1 + Math.floor(Math.log10(absMax));
-    const possiblePlaces = qst.places
-      .slice(0, intDigits)
-      .reverse()
-      .concat(qst.decimalPlaces.slice(0, qst.decimalDigits));
-    qst.place = randomSample(possiblePlaces);
     const { min, max, decimalDigits } = qst;
+    // const absMax = Math.max(Math.abs(qst.min), Math.abs(qst.max));
+    // const intDigits = 1 + Math.floor(Math.log10(absMax));
+    // const intDigits =
+
     let num = randomReal(
       min,
       max + 1,
       1,
       decimalDigits == 0 ? undefined : Math.pow(10, -decimalDigits)
     )[0];
+    const intDigits = num.toString().split('.')[0].length;
+    const possiblePlaces = qst.places
+      .slice(0, intDigits)
+      .reverse()
+      .concat(qst.decimalPlaces.slice(0, qst.decimalDigits));
     num = num.toFixed(decimalDigits);
+    qst.place = randomSample(possiblePlaces);
     const pos = possiblePlaces.indexOf(qst.place);
     if (pos > String(num).split("").length) {
       qst.answer = 0;
@@ -1635,6 +1639,10 @@ function numberToWord(num) {
     'eighteen','nineteen'];
   const twoDigit = ['','','twenty','thirty','fourty','fifty','sixty','seventy','eighty',
     'ninety'];
+
+    if (num==0) {
+      return 'zero';
+    }
 
     if (num>=10000) {
       return 'ERROR';

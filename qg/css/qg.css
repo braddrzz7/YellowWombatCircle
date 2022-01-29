@@ -395,6 +395,7 @@ html {
 .categoryheader {
   display:flex;
   flex-wrap:wrap;
+  align-items:center;
   /* font-size:30; */
   font-weight:bold;
   margin:2mm 1mm;
@@ -455,9 +456,9 @@ html {
 .subtext {
   font-size:16;
   display:flex;
-  width:100%;
-  margin-left:5%;
-  margin-top:4px;
+  /* width:100%; */
+  margin-left:3%;
+  /* margin-top:4px; */
   font-weight:normal;
 }
 

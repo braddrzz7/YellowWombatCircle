@@ -1,6 +1,9 @@
 function getSelectedOptionName(selectID) {
   const el = document.getElementById(selectID);
+  if (el==undefined) {return null};
   const ind = el.selectedIndex;
+  if (ind <0 ) {return null};
+
   return el.options[ind].value;
 }
 
@@ -36,7 +39,6 @@ function makeEWS(tab) {
     localStorage.setItem('questions', JSON.stringify(saveObj));
     // open new window with 'saved' view
     window.open(window.location.pathname + '?view=saved', '_blank');
-
     return null;
   }
 
@@ -112,12 +114,15 @@ function selectorCheckboxRow(
       .length;
     document.getElementById("numSelectedQ").innerHTML = numSelected;
   });
-  const name = document.createElement("DIV");
-  name.id = idPrefix + "-click-" + subselectRest;
-  name.innerHTML = text.toUpperCase();
+  const nameClickable = document.createElement("DIV");
+  nameClickable.style='display:flex; width:80%;align-items:center;';
+  nameClickable.id = idPrefix + "-click-" + subselectRest;
+  const nameMain = document.createElement('div');
+  nameMain.innerHTML = text.toUpperCase();
+  nameClickable.append(nameMain);
   wrapper.appendChild(box);
-  wrapper.appendChild(name);
-  name.click();
+  wrapper.appendChild(nameClickable);
+  nameClickable.click();
   return wrapper;
 }
 
@@ -415,14 +420,18 @@ function addQuestionGroupItem(item, [cat, subcat, subsubcat]) {
   questionsGroups[cat][subcat][subsubcat].push(item);
 }
 
-function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix, preSelected=false) {
+function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix, preSelected=false,descr=undefined) {
   const wrapper = document.createElement("DIV");
   wrapper.id = "wrapper-" + longLabel;
   wrapper.classList.add("flexWide");
   Object.assign(wrapper.style, {
     margin: ".5mm 3mm",
   });
-  const labelSplit = shortLabel.split('$$');
+  let labelSplit = shortLabel.split('$$');
+  if (labelSplit[1]==undefined) {
+    // labelSplit[1]=descr;
+    labelSplit[1] = descriptions[longLabel];
+  }
 
   const header = selectorCheckboxRow(
     `${labelSplit[0]}`,
@@ -439,7 +448,7 @@ function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix, p
     const subtext = document.createElement('DIV');
     subtext.innerHTML = labelSplit[1];
     subtext.classList.add('subtext');
-    header.appendChild(subtext)
+    header.lastChild.append(subtext);
   }
 
   const subwrapper = document.createElement("DIV");

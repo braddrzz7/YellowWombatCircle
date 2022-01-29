@@ -28,10 +28,11 @@
 
   <div id='menubar' class='menubar'>
     <div>View<select id='view' onchange='toggleView(filterPars)'>
+      <option value='help'>help</option>
       <option value='all'>all questions</option>
         <option value='presets'>preset groups</option>
-        <option value='kidA'>Kid A</option>
-        <option value='kidB'>Kid B</option>
+        <option value='pathA'>Path A</option>
+        <option value='pathB'>Path B</option>
         <!-- <option value='saved'>saved choices</option> -->
       </select></div>
     <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button>
@@ -54,6 +55,24 @@
     <li>The 'Format' menu controls whether your quiz will display all questions at once on a continuous page, or cycle through them one at a time. </li>
   </ul>
 
+  <div id='help'>
+    <p>Use the <b>View</b> menu up top to select a set of questions to build from.</p>
+    <ul>
+      <li>All Editable - Contains all questions in an editable format, with explanations for how to modfiy the quetsion settings to your needs.</li>
+      <li>Presets - Large colleciton of premade sets grouped by category and of varying difficulty.</li>
+      <li>Example A - Weekly sets of practice exercises for a child beginning with simple addition and counting.</li>
+      <li>Example B - Weekly sets of practice exercises for a child beginning with multiplication.</li>
+    </ul>
+    <p>When you choose a <b>View</b> you will see a page containing headers and subheaders like the ones shown below.</p>
+    <div id='exampleQuestions'></div>
+    <p>Click the headings and subheadings to expand/collapse them.</p>
+    <p>Inside the <em>Addition</em> heading click <em>Up to 10</em> to see a questions to help you practice your addition up to 5+5.</p>
+    <p>Click the <em>Refresh</em> to generate a new question with the same settings.</p>
+    <p>Click the checkboxes on the left side to choose the quesitons you want to practice.
+    <p>Click <em>Make</em> at the top to open a new page containing 10 questions of addition up to 5+5.
+      Each question gives you two tries to get the correct answer.
+      When you finish all the questions your score will appear at the bottom of the page.
+  </div>
   <div id='chooser'></div>
 
   <div id='questionsAll' style="margin-top:1.5cm; display:none;display:flex;flex-wrap:wrap;">
@@ -71,6 +90,13 @@
     <div id='result-one' class='result' style="display:none;"></div>
   </div>
 
+  <div id='about'>
+    <hr>
+  <p>This software is licensed under GNU GPL V3.</p>
+  <p>View on <a href='https://github.com/braddrzz7/YellowWombatCircle'>GitHub</a></p>
+  <p style='display:flex;align-items:center;'>Send feedback to <img style='margin:6;border-radius:50%;' src='logo.png' width=50px;></img>@gmail.com</p>
+</div>
+
 
   <script>
     // Hide question areas until Make is clicked
@@ -85,8 +111,8 @@
     var fullParams = new URLSearchParams(window.location.search);
     const cats =  fullParams.get('cat') || '';
     const tags = fullParams.get('tag') || ''
-    // let view = fullParams.get('view') || 'all'
-    let view = getSelectedOptionName("view");
+    let view = fullParams.get('view') || 'help'
+    // let view = getSelectedOptionName("view");
     document.getElementById('view').value = view;
 
     toggleCounter = 0;
@@ -94,6 +120,9 @@
 
     function toggleView(filterPars) {
       var questionsTree;
+      document.getElementById('help').style.display='none'
+      document.getElementById('about').style.display='none'
+      document.getElementById('instructions').style.display='block'
       if (toggleCounter > 0) {
         clearQuestions(toggleCounter)
       }
@@ -105,16 +134,31 @@
         loadStateFromLocalStorage(questionsTree)
         writePageFromQuestionTree(questionsTree,toggleCounter,true);
         makeEWS('current');
-      }  else if (view == 'all') {
+      }  else if (view=='help') {
+        document.getElementById('help').style.display='block';
+        document.getElementById('about').style.display='block';
+        document.getElementById('instructions').style.display='none';
+        writePageFromQuestionTree({
+          'Math':{
+            'Addition':{
+              'Up to 5+5':[
+                  ['math-arithmetic', {sign:'+',termRanges: [[0, 5],[0, 5]], answerRange: [0, 10] }]
+              ],
+              'Negatives':{}
+            },
+            'Subtraction':{}
+          }
+        },toggleCounter);
+      }else if (view == 'all') {
         loadAllQuestions(questionsTree,filterPars, toggleCounter);
         writePageFromQuestionTree(questionsTree,toggleCounter);
       } else if (view == 'presets') {
         // questionsGroups loaded in presets.js
         writePresets(questionsGroups, filterPars, toggleCounter)
-      } else if (view=='kidA') {
+      } else if (view=='pathA') {
         writePresets(questionsGroupsA, filterPars, toggleCounter,autolabel=false)
-      } else if (view=='kidB') {
-        writePresets(questionsGroupsB, filterPars, toggleCounter,autolabel=false)
+      } else if (view=='pathB') {
+        writePresets(mathGroups, filterPars, toggleCounter,autolabel=false,openLevel=1)
       }
     }
 

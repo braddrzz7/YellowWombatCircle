@@ -136,7 +136,7 @@ class Question {
     const prompt = this.createDIV("prompt", {}, this.prompt);
     return prompt;
   }
-  makeContentElement() {
+    makeContentElement() {
     const content = this.createDIV("content");
     if (this.content instanceof Node) {
       content.appendChild(this.content);
@@ -308,7 +308,6 @@ class QuestionMultipleChoice extends Question {
   }
   makeContentElement() {
     const content = this.createDIV("content");
-    const topcontent = this.createDIV("content");
     const choiceRow = this.createDIV(["content", this.containerClass]);
     if (this.labeled) {
       // why did I add this condition?
@@ -336,7 +335,7 @@ class QuestionMultipleChoice extends Question {
     } else {
       choiceRow.innerHTML = this.choices.join("&nbsp;&nbsp;&nbsp;");
     }
-    if (this.topcontent) {
+    if (this.topcontent != undefined) {
       content.appendChild(this.topcontent);
     }
     content.appendChild(choiceRow);

@@ -103,7 +103,7 @@ function writePageFromQuestionTree(questionsTree, n, preSelected=false) {
     (arg, trail) => {
       if (trail.length > 0) {
         const [wrapperCat, qCat] = questionLevelContainer(trail[trail.length - 1], trail.join('-'), 'categoryheader', topPrefix,preSelected);
-        wrapperCat.style['font-size'] = Math.max(15, 30 - 5 * (trail.length - 1))
+        wrapperCat.style['font-size'] = Math.max(15, 20 - 4 * (trail.length - 1))
         wrapperCat.style['font-family'] = ['Arial', 'Times', 'Courier'][trail.length - 1 % 3]
         document.getElementById(topPrefix + trail.slice(0, trail.length - 1).join('-')).appendChild(wrapperCat)
       }

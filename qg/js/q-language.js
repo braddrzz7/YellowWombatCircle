@@ -222,9 +222,14 @@ function vowelSounds() {
 
 defineQuestionType("language-spelling-pictureJumble", {
   questionClass: QuestionMultipleChoice,
+  minWordLength:3,
+  maxWordLength:5,
   setup: (qst) => {
     (qst.prompt = "Unscramble the world below"),
-      (qst.image = randomSample(imageNames())),
+      (qst.image = randomSample(imageNames().filter(function(imgName) {
+        const len = imageNameFromFileName(imgName).length;
+        return len >= qst.minWordLength && len<=qst.maxWordLength; 
+      }))),
       (qst.topcontent = makeImageElement(qst.image, 150, {
         "background-color": "white",
       })),
