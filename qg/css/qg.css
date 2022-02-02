@@ -453,13 +453,15 @@ html {
   padding:5px;
 }
 
-.subtext {
-  font-size:16;
+.subtext, .sidetext {
+  font-size:14;
   display:flex;
-  /* width:100%; */
   margin-left:3%;
-  /* margin-top:4px; */
   font-weight:normal;
+  width:100%;
+}
+.sidetext {
+  font-size:16;
 }
 
 .highlight {

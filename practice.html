@@ -14,8 +14,7 @@
   <script src="qg/js/maker.js"></script>
   <script src="qg/js/everything.js"></script>
   <script src="qg/js/presets.js"></script>
-  <script src="qg/js/presetsA.js"></script>
-  <script src="qg/js/presetsB.js"></script>
+  <script src="qg/js/ourPath.js"></script>
 
 
   <link rel="stylesheet" type="text/css" href="qg/css/qg.css">
@@ -31,8 +30,7 @@
       <option value='help'>help</option>
       <option value='all'>all questions</option>
         <option value='presets'>preset groups</option>
-        <option value='pathA'>Path A</option>
-        <option value='pathB'>Path B</option>
+        <option value='ourPath'>Our Path</option>
         <!-- <option value='saved'>saved choices</option> -->
       </select></div>
     <button id='toggleAllQuestions' onclick='toggleAllQuestions()'>Open/Close All</button>
@@ -155,9 +153,7 @@
       } else if (view == 'presets') {
         // questionsGroups loaded in presets.js
         writePresets(questionsGroups, filterPars, toggleCounter)
-      } else if (view=='pathA') {
-        writePresets(questionsGroupsA, filterPars, toggleCounter,autolabel=false)
-      } else if (view=='pathB') {
+      } else if (view=='ourPath') {
         writePresets(mathGroups, filterPars, toggleCounter,autolabel=false,openLevel=1)
       }
     }

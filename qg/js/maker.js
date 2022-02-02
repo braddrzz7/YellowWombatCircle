@@ -157,6 +157,7 @@ function toggleCheckboxFunction(boxID, selector) {
 function toggleAllQuestions() {
   const clickableThings = document.querySelectorAll('[id^="subheader-click-wrapper-"]');
   for (var i = 0; i < clickableThings.length; i++) {
+    console.log(clickableThings[i].id)
     if (clickableThings[i].id.split('-').length > 6) {
       clickableThings[i].click()
     }
@@ -428,10 +429,10 @@ function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix, p
     margin: ".5mm 3mm",
   });
   let labelSplit = shortLabel.split('$$');
-  if (labelSplit[1]==undefined) {
-    // labelSplit[1]=descr;
-    labelSplit[1] = descriptions[longLabel];
+  if (labelSplit[2]==undefined) {
+    labelSplit[2] = (descriptions!=null)?descriptions[longLabel]:null;
   }
+
 
   const header = selectorCheckboxRow(
     `${labelSplit[0]}`,
@@ -443,12 +444,19 @@ function questionLevelContainer(shortLabel, longLabel, headerClass, topPrefix, p
   );
   header.id = "header-" + longLabel;
   header.classList.add(headerClass);
+console.log(labelSplit);
+  if (labelSplit[2] != undefined) {
+    const sidetext = document.createElement('DIV');
+    sidetext.innerHTML = labelSplit[2];
+    sidetext.classList.add('sidetext');
+    header.lastChild.append(sidetext);
+  }
 
   if (labelSplit[1] != undefined) {
     const subtext = document.createElement('DIV');
     subtext.innerHTML = labelSplit[1];
     subtext.classList.add('subtext');
-    header.lastChild.append(subtext);
+    header.append(subtext);
   }
 
   const subwrapper = document.createElement("DIV");

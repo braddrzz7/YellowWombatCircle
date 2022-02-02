@@ -28,11 +28,6 @@ function addMixSection(mainObj, label,sublabel) {
 }
 
 
-///////////////////////////////////////////////
-groupsDescriptions={
-};
-
-
 // the descriptions mainly describe the new things in each section.
 // each section can also contain review material from previous sections
 const descriptions = {};
@@ -160,6 +155,42 @@ mathGroups['2']['C'] = {
   ]
 };
 
+txt1=`Rounding & Estimation Introduction$$Rounding to 10 and `+
+  `addition/subtraction on tens.  The goal here is to introduce rounding as a `+
+  `tool for estimating addition/subtraction problems we can't yet solve`;
+mathGroups['2'][`Rounding and Estimation`] = {
+  'Adding tens':{},
+  'Rounding': {
+    "Rounding to 10's up to 100": ['math-rounding', {
+      rountTo: 10,
+      max: 100
+    }]
+  },
+  'Place Value': {
+    'Place Value': [
+      ["math-numbers-placeValueFrom", {}],
+      ['math-numbers-placeValueTo', {
+        format: 'words'
+      }]
+    ]
+  }
+}
+
+mathGroups['2'][`Numbers up to 999`] = {
+  'Reading numbers':{'reading numbers':[
+    ['math-numbers-reading', {top: 'number',min: 1,max: 999}],
+    ['math-numbers-reading', {top: 'word',min: 1,max: 999}],
+  ]
+},
+  'Adding a few':{
+    'adding a few':[
+    ['math-arithmetic', {format:'word',sign:'-',termRanges: [[100, 996],[1, 3]], shuffle:false, answerRange: [0, 999] }],
+    ['math-arithmetic', {format:'word',sign:'+',termRanges: [[100, 996],[1, 3]], shuffle:true, answerRange: [0, 999] }],
+    ['math-arithmetic', {sign:'-',termRanges: [[100, 996],[1, 3]], shuffle:false, answerRange: [0, 999] }],
+    ['math-arithmetic', {sign:'+',termRanges: [[100, 996],[1, 3]], shuffle:true, answerRange: [0, 999] }]
+  ]
+}
+}
 
 /*
 mathGroups['2']['Numbers up to 100 -- adding and subtracting  1 or 2']={
@@ -245,24 +276,6 @@ questionsGroupsB['Language']['Spelling 2'] = {
 }
 */
 
-//
-// questionsGroupsB['2022']['February'] = {
-//   'Rounding': {
-//     "Rounding to 10's up to 100": ['math-rounding', {
-//       rountTo: 10,
-//       max: 100
-//     }]
-//   },
-//   'Place Value': {
-//     'Place Value': [
-//       ["math-numbers-placeValueFrom", {}],
-//       ['math-numbers-placeValueTo', {
-//         format: 'words'
-//       }]
-//     ]
-//   }
-// }
-// ]
 
 
 mathGroups['3']={};

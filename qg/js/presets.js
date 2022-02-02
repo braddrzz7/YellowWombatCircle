@@ -28,9 +28,6 @@ function writePresets(questionsTree,fullParams, n,autolabel=true,openLevel=2) {
   var levelVal, sublevelVal
   var topPrefix = 'subheader-' + n.toString() + '-'
 
-  // add Mixture sections
-  
-
   traverseGroups(
     questionsTree,
     (arg, trail, level, sublevel) => {
@@ -41,9 +38,6 @@ function writePresets(questionsTree,fullParams, n,autolabel=true,openLevel=2) {
           prefix = ''
         } else if (trail.length == 2) {
           levelVal = levelVal + 1;
-          prefix = autolabel?('Level ' + String.fromCharCode(levelVal)):'';
-          sublevelVal = 0;
-        } else if (trail.length == 3) {
           sublevelVal = sublevelVal + 1;
           prefix = autolabel?(String.fromCharCode(levelVal) + String(sublevelVal) + ' -'):'';
         }
