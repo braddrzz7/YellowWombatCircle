@@ -107,7 +107,7 @@ mathGroups['1']['B'] = {
 /////////////////////////////////////////////
 mathGroups['2']={};
 descriptions['2'] = `Numbers up to 100, addition and subtraction up to 100 +- 10, place value ones and tens.`;
-descriptions['2-A'] = 'Numbers up to 10';
+descriptions['2-A'] = 'Numbers up to 100';
 mathGroups['2']['A'] = {
   'Numbers up to 100':[
     ['math-numbers-reading', {top: 'number',min: 1,max: 100}],
@@ -155,42 +155,60 @@ mathGroups['2']['C'] = {
   ]
 };
 
-txt1=`Rounding & Estimation Introduction$$Rounding to 10 and `+
-  `addition/subtraction on tens.  The goal here is to introduce rounding as a `+
-  `tool for estimating addition/subtraction problems we can't yet solve`;
 mathGroups['2'][`Rounding and Estimation`] = {
   'Adding tens':{},
-  'Rounding': {
     "Rounding to 10's up to 100": ['math-rounding', {
-      rountTo: 10,
+      roundTo: 10,
       max: 100
-    }]
-  },
-  'Place Value': {
+    }],
     'Place Value': [
       ["math-numbers-placeValueFrom", {}],
       ['math-numbers-placeValueTo', {
         format: 'words'
       }]
     ]
-  }
 }
 
 mathGroups['2'][`Numbers up to 999`] = {
-  'Reading numbers':{'reading numbers':[
+  'Reading numbers':[
     ['math-numbers-reading', {top: 'number',min: 1,max: 999}],
     ['math-numbers-reading', {top: 'word',min: 1,max: 999}],
-  ]
-},
-  'Adding a few':{
-    'adding a few':[
+  ],
+  'Comparisons':[
+
+    ['math-numbers-compare', {n:2, min: 0, max:100 }],
+  ],
+  'Counting': [
+    ['math-counting-countingSequence', {start: [100, 985],step: 1,nAfter: 2, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [100, 985],step: 1,nAfter: 0, nBefore:5, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [100, 985],step: 1,nAfter: 5, nBefore:0, nBlank:1 }]
+  ],
+  'Adding and subtracting a few':[
     ['math-arithmetic', {format:'word',sign:'-',termRanges: [[100, 996],[1, 3]], shuffle:false, answerRange: [0, 999] }],
     ['math-arithmetic', {format:'word',sign:'+',termRanges: [[100, 996],[1, 3]], shuffle:true, answerRange: [0, 999] }],
     ['math-arithmetic', {sign:'-',termRanges: [[100, 996],[1, 3]], shuffle:false, answerRange: [0, 999] }],
     ['math-arithmetic', {sign:'+',termRanges: [[100, 996],[1, 3]], shuffle:true, answerRange: [0, 999] }]
   ]
 }
+
+mathGroups['2']['Counting By'] = {
+        'ten':[
+    ['math-counting-countingSequence', {start: [1, 85],step: 10,offset:0,nAfter: 2, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [1, 85],step: 10,offset:0,nAfter: 0, nBefore:5, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [1, 85],step: 10,offset:0,nAfter: 5, nBefore:0, nBlank:1 }]
+  ],
+  'two':[
+    ['math-counting-countingSequence', {start: [1, 85],step: 2,offset:0,nAfter: 2, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [1, 85],step: 2,offset:0,nAfter: 0, nBefore:5, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [1, 85],step: 2,offset:0,nAfter: 5, nBefore:0, nBlank:1 }]
+  ],
+  'five':[
+    ['math-counting-countingSequence', {start: [1, 85],step:5, offset:0,nAfter: 2, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [1, 85],step: 5,offset:0,nAfter: 0, nBefore:5, nBlank:1 }],
+    ['math-counting-countingSequence', {start: [1, 85],step: 5,offset:0,nAfter: 5, nBefore:0, nBlank:1 }]
+  ]
 }
+
 
 /*
 mathGroups['2']['Numbers up to 100 -- adding and subtracting  1 or 2']={
@@ -279,9 +297,9 @@ questionsGroupsB['Language']['Spelling 2'] = {
 
 
 mathGroups['3']={};
-descriptions['3'] = 'Multiplication and ';
+descriptions['3'] = 'Multiplication';
 descriptions['3-C'] = '';
-mathGroups['3']['C'] = {
+mathGroups['3']['Key Addition Reviews'] = {
   'Making 10':[
     ['math-arithmetic', {sign:'+',termRanges: [[3, 9],[0, 9]],blank:'ab', answerRange: [10, 10] }]
   ],
@@ -291,15 +309,21 @@ mathGroups['3']['C'] = {
   'Inverse addition up to 10':[
     ['math-arithmetic', {sign:'+',termRanges: [[3, 9],[2, 9]], blank:'ab',answerRange: [0, 100] }]
   ],
+    'Doubles up to 10+10':[
+    ['math-arithmetic', {sign:'+',termRanges: [[0, 10],[2, 10]], differenceRange:[0,0],answerRange: [0, 100] }]
+  ]
+};
+mathGroups['3']['Simple multiplication'] = {
   'Multiplying up to 5x5':[
     ['math-arithmetic', {sign:'*',termRanges: [[0, 5],[2, 5]], answerRange: [0, 100] }]
   ],
   'Multiplying by 2 up to 2x10':[
     ['math-arithmetic', {sign:'*',termRanges: [[2, 2],[2, 10]], answerRange: [0, 100] }]
   ],
-  'Doubles up to 10+10':[
-    ['math-arithmetic', {sign:'+',termRanges: [[0, 10],[2, 10]], differenceRange:[0,0],answerRange: [0, 100] }]
-  ],
+
+};
+
+mathGroups['4']['Preparing for multi-digit multiplication'] = {
   'Rewriting AB x C': [
     ["math-multiplication-expansion-matching", {bDigits:1,expandTop:false,expandBottom:false }]
   ]
